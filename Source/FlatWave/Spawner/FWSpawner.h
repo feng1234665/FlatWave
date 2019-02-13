@@ -16,7 +16,9 @@ public:
 	AFWSpawner();
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Debug)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Debug, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* Root;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Debug, meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* VisualDebugMeshComponent;
 
 	virtual void BeginPlay() override;

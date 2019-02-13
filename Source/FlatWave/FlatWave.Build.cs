@@ -16,6 +16,7 @@ public class FlatWave : ModuleRules
             "FlatWave/Characters/Player",
             "FlatWave/Characters/Enemy",
             "FlatWave/Weapons",
+            "FlatWave/Weapons/Projectiles",
             "FlatWave/Util",
             "FlatWave/Spawner",
             "FlatWave/GameMode",
