@@ -2,6 +2,7 @@
 
 #include "FWPlayerController.h"
 #include "FWPlayerCharacterBase.h"
+#include "FWUtilities.h"
 
 void AFWPlayerController::SetupInputComponent()
 {
@@ -78,6 +79,27 @@ void AFWPlayerController::StopJump()
 class AFWPlayerCharacterBase* AFWPlayerController::GetPlayerPawn() const
 {
 	return Cast<AFWPlayerCharacterBase>(GetPawn());
+}
+
+void AFWPlayerController::DestroyActor_Implementation(AActor* ActorToDestroy)
+{
+	if (ActorToDestroy)
+		ActorToDestroy->Destroy();
+}
+
+bool AFWPlayerController::DestroyActor_Validate(AActor* ActorToDestroy)
+{
+	return true;
+}
+
+void AFWPlayerController::ApplyDamage_Implementation(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType)
+{
+	UFWUtilities::ApplyDamage(DamagedActor, Damage, InstigatorController, DamageCauseer, DamageType);
+}
+
+bool AFWPlayerController::ApplyDamage_Validate(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType)
+{
+	return true;
 }
 
 void AFWPlayerController::SpawnActor_Implementation(UClass* InClass, FVector Location, FRotator Rotation, APawn* Instigator)
