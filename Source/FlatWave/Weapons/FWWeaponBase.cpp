@@ -6,14 +6,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "FWPlayerController.h"
 
-#include <EngineGlobals.h>
-#include <Runtime/Engine/Classes/Engine/Engine.h>
-
 DEFINE_LOG_CATEGORY_STATIC(LogFWWeapon, Warning, All);
 
 UFWWeaponBase::UFWWeaponBase()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	bReplicates = true;
 }
 
 void UFWWeaponBase::TriggerPressed()
@@ -87,7 +85,6 @@ void UFWWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			FireProjectile();
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"), FireRateCounter, WarmupCounter));
 }
 
 class AFWPlayerCharacterBase* UFWWeaponBase::GetOwnerCharacter() const
