@@ -4,11 +4,10 @@
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/InputSettings.h"
-#include "Kismet/GameplayStatics.h"
 #include "FWRocketLauncher.h"
 #include "FWMinigun.h"
+#include "FWHealthComponent.h"
+#include "FWPlayerController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
@@ -49,6 +48,8 @@ AFWPlayerCharacterBase::AFWPlayerCharacterBase()
 
 	RocketLauncherComponent = CreateDefaultSubobject<UFWRocketLauncher>("RocketLauncher");
 	MinigunComponent = CreateDefaultSubobject<UFWMinigun>("Minigun");
+
+
 }
 
 void AFWPlayerCharacterBase::BeginPlay()
@@ -81,6 +82,15 @@ void AFWPlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 }
 
+float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!Cast<AFWPlayerController>(EventInstigator))
+	{
+		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
+	return 0.f;
+}
+
 FVector AFWPlayerCharacterBase::GetProjectileSpawnLocation()
 {
 	return FP_MuzzleLocation->GetComponentLocation();
@@ -93,7 +103,8 @@ FRotator AFWPlayerCharacterBase::GetProjectileSpawnRotation()
 
 void AFWPlayerCharacterBase::OnTriggerPressed()
 {
-	CurrentWeapon->TriggerPressed();
+	if (CurrentWeapon)
+		CurrentWeapon->TriggerPressed();
 
 	// try and play a firing animation if specified
 	if (FireAnimation != NULL)
@@ -109,6 +120,7 @@ void AFWPlayerCharacterBase::OnTriggerPressed()
 
 void AFWPlayerCharacterBase::OnTriggerReleased()
 {
+	if (CurrentWeapon)
 	CurrentWeapon->TriggerReleased();
 }
 
