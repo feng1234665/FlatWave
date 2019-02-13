@@ -25,8 +25,11 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Replicated)
 		class UFWProjectileData* ProjectileData;
 
 	void NotifyActorBeginOverlap(AActor* OtherActor);
+
+private:
+	class AFWPlayerController* GetPlayerInstigatorController() const;
 };
