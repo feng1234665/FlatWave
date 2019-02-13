@@ -2,10 +2,14 @@
 
 #include "FWSpawner.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
 
 AFWSpawner::AFWSpawner()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
+	RootComponent = Root;
 
 	VisualDebugMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("VisualDebugMesh");
 	VisualDebugMeshComponent->SetupAttachment(RootComponent);
