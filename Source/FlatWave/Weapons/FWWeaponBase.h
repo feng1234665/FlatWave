@@ -39,6 +39,7 @@ protected:
 		class UFWWeaponData* WeaponData;
 
 	class AFWPlayerCharacterBase* GetOwnerCharacter() const;
+	class AFWPlayerController* GetOwnerPlayerController() const;
 private:
 	bool bTriggerPressed = false;
 };

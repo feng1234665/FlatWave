@@ -43,6 +43,8 @@ protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
+	class UFWWeaponBase* CurrentWeapon;
+
 public:
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -55,31 +57,17 @@ public:
 	FVector GetProjectileSpawnLocation();
 	FRotator GetProjectileSpawnRotation();
 
-protected:
-
 	void OnTriggerPressed();
 	void OnTriggerReleased();
 
-	/** Handles moving forward/backward */
-	void MoveForward(float Val);
+	void OnAltTriggerPressed();
+	void OnAltTriggerReleased();
 
-	/** Handles stafing movement, left and right */
-	void MoveRight(float Val);
+	void SwitchToFirstWeapon();
+	void SwitchToSecondWeapon();
 
-	/**
-	 * Called via input to turn at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
-
-
-
+	void MoveForward(float Value);
+	void MoveRight(float Value);
 public:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const

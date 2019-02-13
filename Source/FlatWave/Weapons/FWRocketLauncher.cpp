@@ -5,16 +5,15 @@
 #include "FWProjectileData.h"
 #include "FWProjectile.h"
 #include "FWPlayerCharacterBase.h"
+#include "FWPlayerController.h"
 
 void UFWRocketLauncher::FireProjectile()
 {
 	Super::FireProjectile();
 	if (!WeaponData)
 		return;
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Instigator = Cast<APawn>(GetOwner());
-	GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass,
-										  GetOwnerCharacter()->GetProjectileSpawnLocation(),
-										  GetOwnerCharacter()->GetProjectileSpawnRotation(),
-										  SpawnParameters);
+	GetOwnerPlayerController()->SpawnActor(WeaponData->ProjectileData->ProjectileClass,
+										   GetOwnerCharacter()->GetProjectileSpawnLocation(),
+										   GetOwnerCharacter()->GetProjectileSpawnRotation(),
+										   GetOwnerCharacter());
 }
