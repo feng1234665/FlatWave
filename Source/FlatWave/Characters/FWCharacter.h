@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "FWCharacter.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class FLATWAVE_API AFWCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -16,14 +16,18 @@ public:
 	AFWCharacter();
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status, meta = (AllowPrivateAccess = "true"))
+		class UFWHealthComponent* HealthComponent;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+	UFUNCTION()
+		virtual void OnDeath();
+public:
+	class UFWHealthComponent* GetHealthComponent() const;
+protected:
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 };

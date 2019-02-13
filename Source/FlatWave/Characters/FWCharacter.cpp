@@ -1,33 +1,44 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FWCharacter.h"
+#include "FWHealthComponent.h"
 
-// Sets default values
+DEFINE_LOG_CATEGORY_STATIC(LogFWCharacter, Warning, All);
+
 AFWCharacter::AFWCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	HealthComponent = CreateDefaultSubobject<UFWHealthComponent>("HealthComponent");
+	bReplicates = true;
+	bReplicateMovement = true;
 }
 
-// Called when the game starts or when spawned
 void AFWCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	HealthComponent->OnDeath.AddDynamic(this, &AFWCharacter::OnDeath);
 }
 
-// Called every frame
+void AFWCharacter::OnDeath()
+{
+	Destroy();
+}
+
+class UFWHealthComponent* AFWCharacter::GetHealthComponent() const
+{
+	return HealthComponent;
+}
+
 void AFWCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
-void AFWCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+float AFWCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	UE_LOG(LogFWCharacter, Warning, TEXT("Taken Damage: %f from Actor: %s"), DamageAmount, *DamageCauser->GetHumanReadableName());
+	HealthComponent->ChangeHealth(-DamageAmount);
+	return DamageAmount;
 }
 
