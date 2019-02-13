@@ -22,8 +22,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		EProjectileType Type;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		float ImpactDamage = 100.f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated)
+		float ImpactDamage = 100;
 
 	// HITSCAN
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = HITSCAN)
@@ -37,4 +37,6 @@ public:
 		TSubclassOf<class AFWProjectile> ProjectileClass;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		bool bSimulatePhysics = false;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		bool bDestroyOnHit = true;
 };
