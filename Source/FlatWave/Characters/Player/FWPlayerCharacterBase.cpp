@@ -60,6 +60,8 @@ void AFWPlayerCharacterBase::BeginPlay()
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
 	Mesh1P->SetHiddenInGame(false, true);
+
+	CurrentWeapon = MinigunComponent;
 }
 
 void AFWPlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -91,7 +93,7 @@ FRotator AFWPlayerCharacterBase::GetProjectileSpawnRotation()
 
 void AFWPlayerCharacterBase::OnTriggerPressed()
 {
-	MinigunComponent->TriggerPressed();
+	CurrentWeapon->TriggerPressed();
 
 	// try and play a firing animation if specified
 	if (FireAnimation != NULL)
@@ -107,7 +109,35 @@ void AFWPlayerCharacterBase::OnTriggerPressed()
 
 void AFWPlayerCharacterBase::OnTriggerReleased()
 {
-	MinigunComponent->TriggerReleased();
+	CurrentWeapon->TriggerReleased();
+}
+
+void AFWPlayerCharacterBase::OnAltTriggerPressed()
+{
+
+}
+
+void AFWPlayerCharacterBase::OnAltTriggerReleased()
+{
+
+}
+
+void AFWPlayerCharacterBase::SwitchToFirstWeapon()
+{
+	if (CurrentWeapon && CurrentWeapon != MinigunComponent)
+	{
+		CurrentWeapon->TriggerReleased();
+	}
+	CurrentWeapon = MinigunComponent;
+}
+
+void AFWPlayerCharacterBase::SwitchToSecondWeapon()
+{
+	if (CurrentWeapon && CurrentWeapon != RocketLauncherComponent)
+	{
+		CurrentWeapon->TriggerReleased();
+	}
+	CurrentWeapon = RocketLauncherComponent;
 }
 
 void AFWPlayerCharacterBase::MoveForward(float Value)

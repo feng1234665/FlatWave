@@ -4,6 +4,7 @@
 #include "FWWeaponData.h"
 #include "FWPlayerCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "FWPlayerController.h"
 
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
@@ -92,4 +93,9 @@ void UFWWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 class AFWPlayerCharacterBase* UFWWeaponBase::GetOwnerCharacter() const
 {
 	return Cast<AFWPlayerCharacterBase>(GetOwner());
+}
+
+class AFWPlayerController* UFWWeaponBase::GetOwnerPlayerController() const
+{
+	return Cast<AFWPlayerController>(GetOwnerCharacter()->GetController());
 }
