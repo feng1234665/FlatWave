@@ -22,9 +22,11 @@ protected:
 		class UStaticMeshComponent* VisualDebugMeshComponent;
 
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	virtual AActor* SpawnActor();
+public:	
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AActor> DefaultSpawnedClass;
+	UPROPERTY(EditDefaultsOnly)
+		bool bSpawnOnBeginPlay = true;
 };

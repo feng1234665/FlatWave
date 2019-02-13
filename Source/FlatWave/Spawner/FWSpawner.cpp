@@ -7,6 +7,7 @@
 AFWSpawner::AFWSpawner()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
 	RootComponent = Root;
@@ -20,7 +21,10 @@ AFWSpawner::AFWSpawner()
 void AFWSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (bSpawnOnBeginPlay)
+	{
+		SpawnActor();
+	}
 }
 
 // Called every frame
@@ -28,5 +32,14 @@ void AFWSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+AActor* AFWSpawner::SpawnActor()
+{
+	if (Role == ROLE_Authority)
+	{
+		return GetWorld()->SpawnActor<AActor>(DefaultSpawnedClass, GetActorTransform());
+	}
+	return nullptr;
 }
 
