@@ -14,10 +14,9 @@ void UFWMinigun::FireProjectile()
 	Super::FireProjectile();
 	if (!WeaponData)
 		return;
-	GetOwnerPlayerController()->SpawnActor(WeaponData->ProjectileData->ProjectileClass,
-										   GetOwnerCharacter()->GetProjectileSpawnLocation(),
-										   GetOwnerCharacter()->GetProjectileSpawnRotation(),
-										   GetOwnerCharacter());
+	GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass,
+						   GetOwnerCharacter()->GetProjectileSpawnLocation(),
+						   GetOwnerCharacter()->GetProjectileSpawnRotation());
 	TArray<FHitResult> Hits;
 	FCollisionObjectQueryParams Params(FCollisionObjectQueryParams::InitType::AllDynamicObjects);
 	FVector Start = GetOwnerCharacter()->GetProjectileSpawnLocation();
@@ -29,11 +28,11 @@ void UFWMinigun::FireProjectile()
 		{
 			if (Hit.Actor.IsValid() && Hit.Actor.Get() != GetOwner())
 			{
-				GetOwnerPlayerController()->ApplyDamage(Hit.Actor.Get(),
-														WeaponData->ProjectileData->ImpactDamage,
-														GetOwnerPlayerController(),
-														GetOwner(),
-														UFWDamgeTypeBase::StaticClass());
+				UFWUtilities::ApplyDamage(Hit.Actor.Get(),
+										  WeaponData->ProjectileData->ImpactDamage,
+										  GetOwnerPlayerController(),
+										  GetOwner(),
+										  UFWDamgeTypeBase::StaticClass());
 			}
 		}
 	}

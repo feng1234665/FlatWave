@@ -18,9 +18,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	UPROPERTY(EditDefaultsOnly, Replicated, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		float MaxHealth = 1000;
-	UPROPERTY(Replicated)
+	UPROPERTY()
 		float CurrentHealth = 1000;
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)

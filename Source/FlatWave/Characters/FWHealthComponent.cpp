@@ -42,11 +42,3 @@ void UFWHealthComponent::Reset()
 {
 	ChangeHealth(MaxHealth);
 }
-
-void UFWHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UFWHealthComponent, CurrentHealth);
-	DOREPLIFETIME(UFWHealthComponent, MaxHealth);
-}

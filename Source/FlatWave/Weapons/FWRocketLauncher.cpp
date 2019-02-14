@@ -12,8 +12,10 @@ void UFWRocketLauncher::FireProjectile()
 	Super::FireProjectile();
 	if (!WeaponData)
 		return;
-	GetOwnerPlayerController()->SpawnActor(WeaponData->ProjectileData->ProjectileClass,
-										   GetOwnerCharacter()->GetProjectileSpawnLocation(),
-										   GetOwnerCharacter()->GetProjectileSpawnRotation(),
-										   GetOwnerCharacter());
+	FActorSpawnParameters Params;
+	Params.Instigator = GetOwnerCharacter();
+	GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass,
+										  GetOwnerCharacter()->GetProjectileSpawnLocation(),
+										  GetOwnerCharacter()->GetProjectileSpawnRotation(),
+										  Params);
 }

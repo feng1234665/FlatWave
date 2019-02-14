@@ -6,16 +6,13 @@
 #include "FWProjectileData.h"
 #include "FWUtilities.h"
 #include "FWDamgeTypeBase.h"
-#include "Net/UnrealNetwork.h"
-#include "FWPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWProjectile, Warning, All);
 
 AFWProjectile::AFWProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
-	bReplicateMovement = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
 	RootComponent = Root;
@@ -53,30 +50,14 @@ void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	if (ProjectileData && OtherActor != GetInstigator())
 	{
-		AFWPlayerController* PlayerController = GetPlayerInstigatorController();
-		if (PlayerController)
+		if (ProjectileData->Type == EProjectileType::PROJECTILE)
 		{
-			if (ProjectileData->Type == EProjectileType::PROJECTILE)
-			{
-				UE_LOG(LogFWProjectile, Warning, TEXT("Apply Damage: %f to Actor: %s"), ProjectileData->ImpactDamage, *OtherActor->GetHumanReadableName());
-				PlayerController->ApplyDamage(OtherActor, ProjectileData->ImpactDamage, PlayerController, this, UFWDamgeTypeBase::StaticClass());
-			}
-			if (ProjectileData->bDestroyOnHit)
-			{
-				PlayerController->DestroyActor(this);
-			}
+			UE_LOG(LogFWProjectile, Warning, TEXT("Apply Damage: %f to Actor: %s"), ProjectileData->ImpactDamage, *OtherActor->GetHumanReadableName());
+			UGameplayStatics::ApplyDamage(OtherActor, ProjectileData->ImpactDamage, GetInstigatorController(), this, UFWDamgeTypeBase::StaticClass());
+		}
+		if (ProjectileData->bDestroyOnHit)
+		{
+			Destroy();
 		}
 	}
-}
-
-class AFWPlayerController* AFWProjectile::GetPlayerInstigatorController() const
-{
-	return Cast<AFWPlayerController>(GetInstigatorController());
-}
-
-void AFWProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AFWProjectile, ProjectileData);
 }
