@@ -39,4 +39,15 @@ public:
 		bool bSimulatePhysics = false;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		bool bDestroyOnHit = true;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		class UParticleSystem* OnDestroyParticleSystem;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		bool bExplodeOnHit = false;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		bool bScaleExplosionDamageWithDistance = true;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		float ExplosionDamage = 100.f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
+		float ExplosionRange = 200.f;
 };
