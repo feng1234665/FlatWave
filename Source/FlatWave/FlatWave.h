@@ -3,3 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#define TRACE_NOCOLLISION ECC_GameTraceChannel2

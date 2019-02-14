@@ -3,10 +3,12 @@
 #include "FWProjectile.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "FWProjectileData.h"
 #include "FWUtilities.h"
 #include "FWDamgeTypeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "FlatWave.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWProjectile, Warning, All);
 
@@ -50,13 +52,29 @@ void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	if (ProjectileData && OtherActor != GetInstigator())
 	{
-		if (ProjectileData->Type == EProjectileType::PROJECTILE)
+		if (ProjectileData->ImpactDamage > 0.f)
 		{
 			UE_LOG(LogFWProjectile, Warning, TEXT("Apply Damage: %f to Actor: %s"), ProjectileData->ImpactDamage, *OtherActor->GetHumanReadableName());
 			UGameplayStatics::ApplyDamage(OtherActor, ProjectileData->ImpactDamage, GetInstigatorController(), this, UFWDamgeTypeBase::StaticClass());
 		}
+		if (ProjectileData->bExplodeOnHit)
+		{
+			TArray<AActor*> IgnoredActors;
+			UGameplayStatics::ApplyRadialDamage(this,
+												ProjectileData->ExplosionDamage,
+												GetActorLocation(),
+												ProjectileData->ExplosionRange,
+												UFWDamgeTypeBase::StaticClass(),
+												IgnoredActors,
+												this,
+												GetInstigatorController(),
+												ProjectileData->bScaleExplosionDamageWithDistance,
+												TRACE_NOCOLLISION);
+		}
 		if (ProjectileData->bDestroyOnHit)
 		{
+			if (ProjectileData->OnDestroyParticleSystem)
+				UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileData->OnDestroyParticleSystem, GetActorLocation(), FRotator::ZeroRotator, true);
 			Destroy();
 		}
 	}
