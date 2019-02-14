@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "FWProjectile.h"
 #include "FWProjectileData.generated.h"
 
 UENUM()

@@ -9,31 +9,30 @@
 #include "FWDamgeTypeBase.h"
 #include "FWUtilities.h"
 
-void UFWMinigun::FireProjectile()
+AFWProjectile* UFWMinigun::FireProjectile()
 {
-	Super::FireProjectile();
-	if (!WeaponData)
-		return;
-	GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass,
-						   GetOwnerCharacter()->GetProjectileSpawnLocation(),
-						   GetOwnerCharacter()->GetProjectileSpawnRotation());
-	TArray<FHitResult> Hits;
-	FCollisionObjectQueryParams Params(FCollisionObjectQueryParams::InitType::AllDynamicObjects);
-	FVector Start = GetOwnerCharacter()->GetProjectileSpawnLocation();
-	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * WeaponData->ProjectileData->MaxRange;
-	bool HasHit = GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, Params);
-	if (HasHit)
+	AFWProjectile* SpawnedProjectile = Super::FireProjectile();
+	if (SpawnedProjectile)
 	{
-		for (FHitResult Hit : Hits)
+		TArray<FHitResult> Hits;
+		FCollisionObjectQueryParams Params(FCollisionObjectQueryParams::InitType::AllDynamicObjects);
+		FVector Start = GetOwnerCharacter()->GetProjectileSpawnLocation();
+		FVector End = Start + SpawnedProjectile->GetActorForwardVector() * WeaponData->ProjectileData->MaxRange;
+		bool HasHit = GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, Params);
+		if (HasHit)
 		{
-			if (Hit.Actor.IsValid() && Hit.Actor.Get() != GetOwner())
+			for (FHitResult Hit : Hits)
 			{
-				UFWUtilities::ApplyDamage(Hit.Actor.Get(),
-										  WeaponData->ProjectileData->ImpactDamage,
-										  GetOwnerPlayerController(),
-										  GetOwner(),
-										  UFWDamgeTypeBase::StaticClass());
+				if (Hit.Actor.IsValid() && Hit.Actor.Get() != GetOwner())
+				{
+					UFWUtilities::ApplyDamage(Hit.Actor.Get(),
+											  WeaponData->ProjectileData->ImpactDamage,
+											  GetOwnerPlayerController(),
+											  GetOwner(),
+											  UFWDamgeTypeBase::StaticClass());
+				}
 			}
 		}
 	}
+	return SpawnedProjectile;
 }

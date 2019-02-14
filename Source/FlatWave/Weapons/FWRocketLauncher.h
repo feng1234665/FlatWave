@@ -14,5 +14,5 @@ class FLATWAVE_API UFWRocketLauncher : public UFWWeaponBase
 {
 	GENERATED_BODY()
 public:
-	void FireProjectile() override;
+	class AFWProjectile* FireProjectile() override;
 };
