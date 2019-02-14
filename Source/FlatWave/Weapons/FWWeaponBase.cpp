@@ -11,7 +11,6 @@ DEFINE_LOG_CATEGORY_STATIC(LogFWWeapon, Warning, All);
 UFWWeaponBase::UFWWeaponBase()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	bReplicates = true;
 }
 
 void UFWWeaponBase::TriggerPressed()
@@ -45,7 +44,8 @@ void UFWWeaponBase::FireProjectile()
 {
 	UE_LOG(LogFWWeapon, Warning, TEXT("FireProjectileBase"));
 	FireRateCounter = 1 / (WeaponData->FireRate / 60.f);
-	UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
+	if (WeaponData->FireSound)
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
 }
 
 void UFWWeaponBase::AddAmmo(int32 Amount)

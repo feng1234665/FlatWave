@@ -31,12 +31,4 @@ private:
 	void StopJump();
 
 	class AFWPlayerCharacterBase* GetPlayerPawn() const;
-
-public:
-	UFUNCTION(Server, Reliable, WithValidation)
-		void SpawnActor(UClass* InClass, FVector Location, FRotator Rotation, APawn* InstigatorPawn);
-	UFUNCTION(Server, Reliable, WithValidation)
-		void DestroyActor(AActor* ActorToDestroy);
-	UFUNCTION(Server, Reliable, WithValidation)
-		void ApplyDamage(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType);
 };

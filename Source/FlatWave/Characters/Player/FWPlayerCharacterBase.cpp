@@ -48,8 +48,6 @@ AFWPlayerCharacterBase::AFWPlayerCharacterBase()
 
 	RocketLauncherComponent = CreateDefaultSubobject<UFWRocketLauncher>("RocketLauncher");
 	MinigunComponent = CreateDefaultSubobject<UFWMinigun>("Minigun");
-
-
 }
 
 void AFWPlayerCharacterBase::BeginPlay()

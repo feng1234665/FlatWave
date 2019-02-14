@@ -18,6 +18,5 @@ AActor* AFWSingleEnemySpawner::SpawnActor()
 
 void AFWSingleEnemySpawner::SimpleSpawn()
 {
-	if (Role == ROLE_Authority)
-		SpawnActor();
+	SpawnActor();
 }

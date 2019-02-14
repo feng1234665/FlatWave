@@ -22,7 +22,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		EProjectileType Type;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		float ImpactDamage = 100;
 
 	// HITSCAN

@@ -19,6 +19,4 @@ public:
 		static class AFWPlayerController* GetFWPlayerController(UObject* WorldContextObject, int32 Index);
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 		static void ApplyDamage(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType);
-
-
 };
