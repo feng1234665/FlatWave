@@ -17,7 +17,7 @@ public:
 	virtual void TriggerPressed();
 	virtual void TriggerReleased();
 
-	virtual void FireProjectile();
+	virtual class AFWProjectile* FireProjectile();
 
 	void AddAmmo(int32 Amount);
 

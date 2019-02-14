@@ -5,6 +5,7 @@
 #include "FWPlayerCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "FWPlayerController.h"
+#include "FWProjectileData.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWWeapon, Warning, All);
 
@@ -40,12 +41,28 @@ void UFWWeaponBase::TriggerReleased()
 	WarmupCounter = WeaponData->WarmupTime;
 }
 
-void UFWWeaponBase::FireProjectile()
+AFWProjectile* UFWWeaponBase::FireProjectile()
 {
 	UE_LOG(LogFWWeapon, Warning, TEXT("FireProjectileBase"));
 	FireRateCounter = 1 / (WeaponData->FireRate / 60.f);
 	if (WeaponData->FireSound)
 		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
+	if (WeaponData->ProjectileData->ProjectileClass)
+	{
+		FVector Location = GetOwnerCharacter()->GetProjectileSpawnLocation();
+		FRotator Rotation = GetOwnerCharacter()->GetProjectileSpawnRotation();
+		if (WeaponData->MaxSpread > 0.f)
+		{
+			FVector RotationVector = Rotation.Vector();
+			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-WeaponData->MaxSpread, WeaponData->MaxSpread), FVector::UpVector);
+			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-WeaponData->MaxSpread, WeaponData->MaxSpread), FVector::RightVector);
+			Rotation = RotationVector.Rotation();
+		}
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Instigator = GetOwnerCharacter();
+		return GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass, Location, Rotation, SpawnParams);
+	}
+	return nullptr;
 }
 
 void UFWWeaponBase::AddAmmo(int32 Amount)
