@@ -3,16 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapons/FWWeaponBase.h"
+#include "FWPlayerWeaponBase.h"
 #include "FWRocketLauncher.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class FLATWAVE_API UFWRocketLauncher : public UFWWeaponBase
+class FLATWAVE_API UFWRocketLauncher : public UFWPlayerWeaponBase
 {
 	GENERATED_BODY()
 public:
-	class AFWProjectile* FireProjectile() override;
 };
