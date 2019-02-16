@@ -17,6 +17,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
 		static class AFWPlayerController* GetFWPlayerController(UObject* WorldContextObject, int32 Index);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
+		static class AFWPlayerController* GetFirstFWPlayerController(UObject* WorldContextObject);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
+		static class AFWPlayerCharacterBase* GetPlayerCharacter(UObject* WorldContextObject);
+
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 		static void ApplyDamage(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType);
 };

@@ -13,5 +13,7 @@ UCLASS()
 class FLATWAVE_API AFWEnemyCharacterBase : public AFWCharacter
 {
 	GENERATED_BODY()
-	
+public:
+	UPROPERTY(EditDefaultsOnly)
+		class UBehaviorTree* BehaviorTree;
 };

@@ -2,3 +2,7 @@
 
 #include "FWMainGameMode.h"
 
+void AFWMainGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+}

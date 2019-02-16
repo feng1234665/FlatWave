@@ -7,11 +7,12 @@
 #include "FWMainGameMode.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class FLATWAVE_API AFWMainGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	void BeginPlay() override;
 };
