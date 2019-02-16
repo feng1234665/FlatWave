@@ -13,7 +13,7 @@ AFWSpawner::AFWSpawner()
 
 	VisualDebugMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("VisualDebugMesh");
 	VisualDebugMeshComponent->SetupAttachment(RootComponent);
-
+	VisualDebugMeshComponent->bHiddenInGame = true;
 }
 
 // Called when the game starts or when spawned
