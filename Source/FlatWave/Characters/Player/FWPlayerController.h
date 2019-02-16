@@ -30,5 +30,6 @@ private:
 	void Jump();
 	void StopJump();
 
-	class AFWPlayerCharacterBase* GetPlayerPawn() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		class AFWPlayerCharacterBase* GetPlayerPawn() const;
 };

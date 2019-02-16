@@ -9,8 +9,6 @@ AFWCharacter::AFWCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	HealthComponent = CreateDefaultSubobject<UFWHealthComponent>("HealthComponent");
-	bReplicates = true;
-	bReplicateMovement = true;
 }
 
 void AFWCharacter::BeginPlay()

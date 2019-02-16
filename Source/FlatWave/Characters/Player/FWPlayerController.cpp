@@ -28,52 +28,62 @@ void AFWPlayerController::SetupInputComponent()
 
 void AFWPlayerController::OnTriggerPressed()
 {
-	GetPlayerPawn()->OnTriggerPressed();
+	if (GetPawn())
+		GetPlayerPawn()->OnTriggerPressed();
 }
 
 void AFWPlayerController::OnTriggerReleased()
 {
-	GetPlayerPawn()->OnTriggerReleased();
+	if (GetPawn())
+		GetPlayerPawn()->OnTriggerReleased();
 }
 
 void AFWPlayerController::OnAltTriggerPressed()
 {
-	GetPlayerPawn()->OnAltTriggerPressed();
+	if (GetPawn())
+		GetPlayerPawn()->OnAltTriggerPressed();
 }
 
 void AFWPlayerController::OnAltTriggerReleased()
 {
-	GetPlayerPawn()->OnAltTriggerReleased();
+	if (GetPawn())
+		GetPlayerPawn()->OnAltTriggerReleased();
 }
 
 void AFWPlayerController::SwitchToFirstWeapon()
 {
-	GetPlayerPawn()->SwitchToFirstWeapon();
+	if (GetPawn())
+		GetPlayerPawn()->SwitchToFirstWeapon();
 }
 
 void AFWPlayerController::SwitchToSecondWeapon()
 {
-	GetPlayerPawn()->SwitchToSecondWeapon();
+	if (GetPawn())
+		GetPlayerPawn()->SwitchToSecondWeapon();
 }
 
 void AFWPlayerController::MoveForward(float Value)
 {
-	GetPlayerPawn()->MoveForward(Value);
+	if (GetPawn())
+		GetPlayerPawn()->MoveForward(Value);
 }
 
 void AFWPlayerController::MoveRight(float Value)
 {
-	GetPlayerPawn()->MoveRight(Value);
+	if (GetPawn())
+		GetPlayerPawn()->MoveRight(Value);
 }
 
 void AFWPlayerController::Jump()
 {
-	GetPlayerPawn()->Jump();
+	if (GetPawn())
+		GetPlayerPawn()->Jump();
 }
 
 void AFWPlayerController::StopJump()
 {
-	GetPlayerPawn()->StopJumping();
+	if (GetPawn())
+		GetPlayerPawn()->StopJumping();
 }
 
 class AFWPlayerCharacterBase* AFWPlayerController::GetPlayerPawn() const
