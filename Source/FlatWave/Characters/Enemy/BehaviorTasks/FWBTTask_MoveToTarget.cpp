@@ -17,7 +17,7 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	AActor* TargetActor = Cast<AActor>(TargetObject);
 	if (TargetActor)
 	{
-		Controller->MoveToActor(TargetActor);
+		Controller->MoveToActor(TargetActor, AcceptanceRadius, true, true, bCanStrafe);
 		return EBTNodeResult::Succeeded;
 	}
 

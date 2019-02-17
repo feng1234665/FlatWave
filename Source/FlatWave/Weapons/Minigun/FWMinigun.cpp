@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "FlatWave.h"
 
 void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
 {
@@ -30,10 +31,9 @@ AFWProjectile* UFWMinigun::FireProjectile()
 	AFWProjectile* SpawnedProjectile = Super::FireProjectile();
 	MuzzleParticles->ActivateSystem();
 	TArray<FHitResult> Hits;
-	FCollisionObjectQueryParams Params(FCollisionObjectQueryParams::InitType::AllDynamicObjects);
 	FVector Start = GetProjectileSpawnLocation();
 	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * WeaponData->ProjectileData->MaxRange;
-	bool HasHit = GetWorld()->LineTraceMultiByObjectType(Hits, Start, End, Params);
+	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, PROJECTILE);
 	if (HasHit)
 	{
 		for (FHitResult Hit : Hits)

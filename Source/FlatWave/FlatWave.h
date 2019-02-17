@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#define TRACE_NOCOLLISION ECC_GameTraceChannel2
+#define PROJECTILE ECollisionChannel::ECC_GameTraceChannel1
+#define TRACE_NOCOLLISION ECollisionChannel::ECC_GameTraceChannel2
 
 #define GETENUMSTRING(etype, evalue) ( (FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true) != nullptr) ? FindObject<UEnum>(ANY_PACKAGE, TEXT(etype), true)->GetNameStringByIndex((int32)evalue) : FString("Invalid - are you sure enum uses UENUM() macro?") )
