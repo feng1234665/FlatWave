@@ -16,4 +16,9 @@ class FLATWAVE_API UFWBTTask_MoveToTarget : public UBTTask_BlackboardBase
 
 private:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
+
+	UPROPERTY(EditAnywhere)
+		float AcceptanceRadius = 100.f;
+	UPROPERTY(EditAnywhere)
+		bool bCanStrafe = false;
 };
