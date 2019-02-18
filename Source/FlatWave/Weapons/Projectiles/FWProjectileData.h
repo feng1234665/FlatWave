@@ -42,6 +42,10 @@ public:
 		bool bDestroyOnHit = true;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		class UParticleSystem* OnDestroyParticleSystem;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Audio)
+		class USoundBase* OnDestroySound;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Audio)
+		class USoundAttenuation* SoundAttenuation;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		bool bExplodeOnHit = false;

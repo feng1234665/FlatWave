@@ -26,15 +26,6 @@ AFWProjectile::AFWProjectile()
 void AFWProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	if (ProjectileData)
-	{
-		if (ProjectileData->bSimulatePhysics)
-		{
-			ProjectileMesh->SetSimulatePhysics(true);
-			ProjectileMesh->AddImpulse(GetActorForwardVector());
-		}
-		SetLifeSpan(ProjectileData->Lifetime);
-	}
 }
 
 void AFWProjectile::Tick(float DeltaTime)
@@ -44,6 +35,20 @@ void AFWProjectile::Tick(float DeltaTime)
 	{
 		FVector NewLocation = GetActorLocation() + GetActorForwardVector() * ProjectileData->InitialVelocity * DeltaTime;
 		SetActorLocation(NewLocation, true);
+	}
+}
+
+void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
+{
+	ProjectileData = NewProctileData;
+	if (ProjectileData)
+	{
+		if (ProjectileData->bSimulatePhysics)
+		{
+			ProjectileMesh->SetSimulatePhysics(true);
+			ProjectileMesh->AddImpulse(GetActorForwardVector());
+		}
+		SetLifeSpan(ProjectileData->Lifetime);
 	}
 }
 
@@ -75,6 +80,8 @@ void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			if (ProjectileData->OnDestroyParticleSystem)
 				UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileData->OnDestroyParticleSystem, GetActorLocation(), FRotator::ZeroRotator, true);
+			if (ProjectileData->OnDestroySound)
+				UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->OnDestroySound, GetActorLocation(), 1.f, 1.f, 0.f, ProjectileData->SoundAttenuation);
 			Destroy();
 		}
 	}

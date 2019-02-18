@@ -66,7 +66,7 @@ AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
 	FireRateCounter = 1 / (WeaponData->FireRate / 60.f);
 	if (WeaponData->FireSound)
 		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
-	if (WeaponData->ProjectileData->ProjectileClass)
+	if (WeaponData->ProjectileData && WeaponData->ProjectileData->ProjectileClass)
 	{
 		FVector Location = GetProjectileSpawnLocation();
 		FRotator Rotation = GetOwnerCharacter()->GetProjectileSpawnRotation();
@@ -79,7 +79,10 @@ AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
 		}
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = GetOwnerCharacter();
-		return GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass, Location, Rotation, SpawnParams);
+		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass, Location, Rotation, SpawnParams);
+		if (SpawnedProjectile)
+			SpawnedProjectile->Init(WeaponData->ProjectileData);
+		return SpawnedProjectile;
 	}
 	return nullptr;
 }
@@ -107,6 +110,16 @@ void UFWPlayerWeaponBase::ConsumeAmmo()
 UFWWeaponData* UFWPlayerWeaponBase::GetWeaponData() const
 {
 	return WeaponData;
+}
+
+float UFWPlayerWeaponBase::GetWarmupCounter()
+{
+	return WarmupCounter;
+}
+
+float UFWPlayerWeaponBase::GetFireRateCounter()
+{
+	return FireRateCounter;
 }
 
 void UFWPlayerWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
