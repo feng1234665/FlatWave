@@ -27,6 +27,11 @@ protected:
 		TArray<class UFWWeaponData*> Weapons;
 	TMap<EWeaponType, class UFWPlayerWeaponBase*> WeaponComponents;
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = Audio)
+		class USoundBase* JumpSound;
+
+	void OnDeath() override;
 public:
 	UFUNCTION(BlueprintCallable)
 		class UFWPlayerWeaponBase* GetCurrentWeapon() const;
@@ -44,6 +49,9 @@ public:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	void JumpPressed();
+	void JumpReleased();
 public:
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const
 	{

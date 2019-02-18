@@ -9,6 +9,7 @@
 #include "FWHealthComponent.h"
 #include "FWPlayerController.h"
 #include "FlatWave.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
@@ -57,6 +58,11 @@ float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent
 		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
 	return 0.f;
+}
+
+void AFWPlayerCharacterBase::OnDeath()
+{
+	DisableInput(Cast<APlayerController>(GetController()));
 }
 
 class UFWPlayerWeaponBase* AFWPlayerCharacterBase::GetCurrentWeapon() const
@@ -127,4 +133,19 @@ void AFWPlayerCharacterBase::MoveRight(float Value)
 	{
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+void AFWPlayerCharacterBase::JumpPressed()
+{
+	if (CanJump())
+	{
+		if (JumpSound)
+			UGameplayStatics::PlaySoundAtLocation(this, JumpSound, GetActorLocation());
+		Jump();
+	}
+}
+
+void AFWPlayerCharacterBase::JumpReleased()
+{
+	StopJumping();
 }
