@@ -33,7 +33,7 @@ AFWProjectile* UFWMinigun::FireProjectile()
 	TArray<FHitResult> Hits;
 	FVector Start = GetProjectileSpawnLocation();
 	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * WeaponData->ProjectileData->MaxRange;
-	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, PROJECTILE);
+	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, COLLISION_PROJECTILE);
 	if (HasHit)
 	{
 		for (FHitResult Hit : Hits)
