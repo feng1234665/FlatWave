@@ -31,9 +31,9 @@ void AFWEnemyHoverTank::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTime)
+void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTime, FVector Offset /*= FVector()*/)
 {
-	FVector DirectionTowardsTarget = GetActorLocation() - Target->GetActorLocation();
+	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = TurretComponent->GetComponentRotation();
 	FRotator TargetRotation = DirectionTowardsTarget.Rotation();
@@ -42,9 +42,9 @@ void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTim
 	TurretComponent->SetWorldRotation(FMath::Lerp(CurrentRotation, TargetRotation, TurretRotationSpeed * DeltaTime));
 }
 
-void AFWEnemyHoverTank::RotateBarrelTowardsTarget(AActor* Target, float DeltaTime)
+void AFWEnemyHoverTank::RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset /*= FVector()*/)
 {
-	FVector DirectionTowardsTarget = GetActorLocation() - Target->GetActorLocation();
+	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = BarrelComponent->GetComponentRotation();
 	FRotator TargetRotation = DirectionTowardsTarget.Rotation();
@@ -71,6 +71,8 @@ void AFWEnemyHoverTank::ShootProjectile()
 		FRotator Direction = MuzzleLocationComponent->GetComponentRotation();
 		FActorSpawnParameters Params;
 		Params.Instigator = this;
-		GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
+		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
+		if (SpawnedProjectile)
+			SpawnedProjectile->Init(ProjectileData);
 	}
 }

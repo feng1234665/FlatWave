@@ -35,6 +35,21 @@ void AFWSpawner::Tick(float DeltaTime)
 
 AActor* AFWSpawner::SpawnActor()
 {
-	return GetWorld()->SpawnActor<AActor>(DefaultSpawnedClass, GetActorTransform());
+	return SpawnActorInternal(DefaultSpawnedClass, GetSpawnLocation(), GetSpawnRotation());
+}
+
+AActor* AFWSpawner::SpawnActorInternal(UClass* ActorClass, FVector Location, FRotator Rotation)
+{
+	return GetWorld()->SpawnActor<AActor>(ActorClass, Location, Rotation);
+}
+
+FVector AFWSpawner::GetSpawnLocation()
+{
+	return GetActorLocation();
+}
+
+FRotator AFWSpawner::GetSpawnRotation()
+{
+	return GetActorRotation();
 }
 

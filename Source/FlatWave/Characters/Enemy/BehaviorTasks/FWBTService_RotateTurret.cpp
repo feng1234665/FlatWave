@@ -18,8 +18,8 @@ void UFWBTService_RotateTurret::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 			AActor* TargetActor = Cast<AActor>(TargetObject);
 			if (TargetActor)
 			{
-				HoverTank->RotateTurretTowardsTarget(TargetActor, DeltaSeconds);
-				HoverTank->RotateBarrelTowardsTarget(TargetActor, DeltaSeconds);
+				HoverTank->RotateTurretTowardsTarget(TargetActor, DeltaSeconds, TargetOffset);
+				HoverTank->RotateBarrelTowardsTarget(TargetActor, DeltaSeconds, TargetOffset);
 			}
 		}
 	}
