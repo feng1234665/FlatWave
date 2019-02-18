@@ -33,7 +33,13 @@ public:
 		int32 GetMaxAmmo();
 	void ConsumeAmmo();
 
-	class UFWWeaponData* GetWeaponData() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		class UFWWeaponData* GetWeaponData() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		float GetWarmupCounter();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		float GetFireRateCounter();
 
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);

@@ -21,9 +21,9 @@ protected:
 		class UStaticMeshComponent* ProjectileMesh;
 
 	virtual void BeginPlay() override;
-
-public:
 	virtual void Tick(float DeltaTime) override;
+public:
+	void Init(class UFWProjectileData* NewProctileData);
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
