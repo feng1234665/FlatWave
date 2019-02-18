@@ -28,8 +28,8 @@ protected:
 	void Tick(float DeltaTime) override;
 
 public:
-	void RotateTurretTowardsTarget(AActor* Target, float DeltaTime);
-	void RotateBarrelTowardsTarget(AActor* Target, float DeltaTime);
+	void RotateTurretTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector());
+	void RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector());
 	UPROPERTY(EditDefaultsOnly)
 		float TurretRotationSpeed = 15.f;
 	UPROPERTY(EditDefaultsOnly)

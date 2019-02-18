@@ -7,7 +7,7 @@
 #include "FWBTService_RotateTurret.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class FLATWAVE_API UFWBTService_RotateTurret : public UBTService_BlackboardBase
@@ -15,4 +15,6 @@ class FLATWAVE_API UFWBTService_RotateTurret : public UBTService_BlackboardBase
 	GENERATED_BODY()
 public:
 	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	UPROPERTY(EditAnywhere)
+		FVector TargetOffset;
 };

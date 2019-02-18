@@ -23,7 +23,12 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+public:
 	virtual AActor* SpawnActor();
+protected:
+	virtual AActor* SpawnActorInternal(UClass* ActorClass, FVector Location, FRotator Rotation);
+	virtual FVector GetSpawnLocation();
+	virtual FRotator GetSpawnRotation();
 public:	
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AActor> DefaultSpawnedClass;
