@@ -24,4 +24,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 		static void ApplyDamage(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType);
+
+	template<typename T>
+	static FORCEINLINE void ShuffleArray(TArray<T>& Array);
 };
+
+template<typename T>
+void UFWUtilities::ShuffleArray(TArray<T>& Array)
+{
+	for (int32 Index = Array.Num() - 1; Index > 0; Index--)
+	{
+		int32 RandomIndex = FMath::RandRange(0, Index);
+		Array.Swap(Index, RandomIndex);
+	}
+}
