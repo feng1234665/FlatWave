@@ -77,13 +77,13 @@ void AFWPlayerController::MoveRight(float Value)
 void AFWPlayerController::Jump()
 {
 	if (GetPawn())
-		GetPlayerPawn()->Jump();
+		GetPlayerPawn()->JumpPressed();
 }
 
 void AFWPlayerController::StopJump()
 {
 	if (GetPawn())
-		GetPlayerPawn()->StopJumping();
+		GetPlayerPawn()->JumpReleased();
 }
 
 class AFWPlayerCharacterBase* AFWPlayerController::GetPlayerPawn() const
