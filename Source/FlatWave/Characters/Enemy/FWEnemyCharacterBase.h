@@ -7,7 +7,7 @@
 #include "FWEnemyCharacterBase.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class FLATWAVE_API AFWEnemyCharacterBase : public AFWCharacter
@@ -16,4 +16,13 @@ class FLATWAVE_API AFWEnemyCharacterBase : public AFWCharacter
 public:
 	UPROPERTY(EditDefaultsOnly)
 		class UBehaviorTree* BehaviorTree;
+
+protected:
+	void OnDeath() override;
+	UPROPERTY(EditDefaultsOnly)
+		float TimeToDestroy = 3.f;
+	FTimerHandle DestroyTimerHandle;
+	void SimpleDestroy();
+
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };

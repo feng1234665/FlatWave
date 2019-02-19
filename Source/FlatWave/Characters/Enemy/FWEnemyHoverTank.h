@@ -44,4 +44,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
 	void ShootProjectile();
+
+protected:
+	void OnDeath() override;
 };
