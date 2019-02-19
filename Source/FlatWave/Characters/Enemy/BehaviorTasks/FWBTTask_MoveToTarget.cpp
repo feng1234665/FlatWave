@@ -14,10 +14,19 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	}
 
 	UObject* TargetObject = OwnerComponent.GetBlackboardComponent()->GetValueAsObject(BlackboardKey.SelectedKeyName);
-	AActor* TargetActor = Cast<AActor>(TargetObject);
-	if (TargetActor)
+	if (TargetObject)
 	{
-		Controller->MoveToActor(TargetActor, AcceptanceRadius, true, true, bCanStrafe);
+		AActor* TargetActor = Cast<AActor>(TargetObject);
+		if (TargetActor)
+		{
+			Controller->MoveToActor(TargetActor, AcceptanceRadius, true, true, bCanStrafe);
+			return EBTNodeResult::Succeeded;
+		}
+	}
+	else
+	{
+		FVector TargetLocation = OwnerComponent.GetBlackboardComponent()->GetValueAsVector(BlackboardKey.SelectedKeyName);
+		Controller->MoveToLocation(TargetLocation, AcceptanceRadius, true, true, false, bCanStrafe);
 		return EBTNodeResult::Succeeded;
 	}
 
