@@ -40,7 +40,9 @@ AActor* AFWSpawner::SpawnActor()
 
 AActor* AFWSpawner::SpawnActorInternal(UClass* ActorClass, FVector Location, FRotator Rotation)
 {
-	return GetWorld()->SpawnActor<AActor>(ActorClass, Location, Rotation);
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	return GetWorld()->SpawnActor<AActor>(ActorClass, Location, Rotation, Params);
 }
 
 FVector AFWSpawner::GetSpawnLocation()
