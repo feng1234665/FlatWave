@@ -40,6 +40,7 @@ void AFWMainGameMode::UpdateRunning(float DeltaSeconds)
 		else
 		{
 			CurrentState = EGameState::GameOver_Win;
+			UE_LOG(LogTemp, Warning, TEXT("GameWon"));
 		}
 	}
 }
