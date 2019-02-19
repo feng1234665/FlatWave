@@ -76,3 +76,12 @@ void AFWEnemyHoverTank::ShootProjectile()
 			SpawnedProjectile->Init(ProjectileData);
 	}
 }
+
+void AFWEnemyHoverTank::OnDeath()
+{
+	Super::OnDeath();
+	ChassisComponent->SetSimulatePhysics(true);
+	ChassisComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	ChassisComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+}

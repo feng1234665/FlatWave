@@ -41,6 +41,7 @@ void AFWAIController::UnPossess()
 {
 	Super::UnPossess();
 	BehaviorComponent->StopTree();
+	Destroy();
 }
 
 void AFWAIController::SetTargetPlayer(class AFWPlayerCharacterBase* Player)
