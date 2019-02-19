@@ -41,9 +41,10 @@ void UFWPlayerWeaponBase::TriggerPressed()
 	if (CurrentAmmo <= 0)
 		return;
 	bTriggerPressed = true;
-	if (WeaponData->WarmupTime <= 0.f && FireRateCounter <= 0.f)
+	if (WeaponData->WarmupTime <= 0.f)
 	{
-		FireProjectile();
+		if (FireRateCounter <= 0.f)
+			FireProjectile();
 	}
 	else
 	{
