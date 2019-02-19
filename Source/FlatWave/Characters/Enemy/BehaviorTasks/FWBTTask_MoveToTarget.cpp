@@ -5,6 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 
+
 EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory)
 {
 	AFWAIController* Controller = Cast<AFWAIController>(OwnerComponent.GetAIOwner());
@@ -20,6 +21,8 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 		if (TargetActor)
 		{
 			Controller->MoveToActor(TargetActor, AcceptanceRadius, true, true, bCanStrafe);
+			if (bResetBlackboardKeyOnReached)
+				Controller->ReceiveMoveCompleted.AddDynamic(this, &UFWBTTask_MoveToTarget::OnTargetReached);
 			return EBTNodeResult::Succeeded;
 		}
 	}
@@ -31,5 +34,10 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	}
 
 	return EBTNodeResult::Failed;
+}
+
+void UFWBTTask_MoveToTarget::OnTargetReached(FAIRequestID RequestID, EPathFollowingResult::Type Result)
+{
+	OwnerComp->GetBlackboardComponent()->ClearValue(BlackboardKey.SelectedKeyName);
 }
 
