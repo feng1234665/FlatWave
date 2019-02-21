@@ -6,9 +6,8 @@
 #include "AIController.h"
 #include "FWAIController.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinished);
+
 UCLASS()
 class FLATWAVE_API AFWAIController : public AAIController
 {
@@ -25,9 +24,14 @@ protected:
 	void Possess(class APawn* InPawn) override;
 	void UnPossess() override;
 
+	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
+
 	FName TargetPlayerKeyName;
 
 public:
+	FOnMoveFinished OnMoveSuccessful;
+	FOnMoveFinished OnMoveFailed;
+	FOnMoveFinished OnMoveDone;
 
 	void SetTargetPlayer(class AFWPlayerCharacterBase* Player);
 };

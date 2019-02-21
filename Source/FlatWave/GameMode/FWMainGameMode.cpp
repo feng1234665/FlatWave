@@ -118,6 +118,10 @@ void AFWMainGameMode::GatherEnemySpawners()
 
 void AFWMainGameMode::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount)
 {
+	if (Amount == 0 || !EnemyClass)
+	{
+		return;
+	}
 	int32 AmountPerSpawner = Amount / EnemySpawners.Num();
 	int32 SpawnsLeft = Amount;
 	TArray<AFWEnemySpawner*> FittingSpawners = EnemySpawners.FilterByPredicate([EnemyClass](AFWEnemySpawner* Spawner)

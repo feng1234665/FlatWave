@@ -13,6 +13,11 @@ UCLASS()
 class FLATWAVE_API UFWBTTask_ShootAtTarget : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
+public:
+	UFWBTTask_ShootAtTarget();
 protected:
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory);
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
+
+	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	bool bIssuedFireCommand = false;
 };

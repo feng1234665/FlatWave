@@ -37,7 +37,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		TSubclassOf<class AFWProjectile> ProjectileClass;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
-		bool bSimulatePhysics = false;
+		float GravityScale = 0.f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		bool bDestroyOnHit = true;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)

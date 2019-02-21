@@ -14,9 +14,11 @@ UCLASS()
 class FLATWAVE_API UFWBTTask_MoveToTarget : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-
+public:
+	UFWBTTask_MoveToTarget();
 private:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
+	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 	UPROPERTY(EditAnywhere)
 		float AcceptanceRadius = 100.f;
@@ -24,8 +26,10 @@ private:
 		bool bCanStrafe = false;
 	UPROPERTY(EditAnywhere)
 		bool bResetBlackboardKeyOnReached = true;
+	UPROPERTY(EditAnywhere)
+		bool bWaitForTargetReached = true;
 
-	UBehaviorTreeComponent* OwnerComp;
+	UBehaviorTreeComponent* OwnerComponent;
 	UFUNCTION()
-		void OnTargetReached(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+		void OnTargetReached();
 };
