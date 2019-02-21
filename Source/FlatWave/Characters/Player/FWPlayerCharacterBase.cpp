@@ -89,12 +89,14 @@ void AFWPlayerCharacterBase::OnTriggerReleased()
 
 void AFWPlayerCharacterBase::OnAltTriggerPressed()
 {
-
+	if (CurrentWeapon)
+		CurrentWeapon->AltTriggerPressed();
 }
 
 void AFWPlayerCharacterBase::OnAltTriggerReleased()
 {
-
+	if (CurrentWeapon)
+		CurrentWeapon->AltTriggerReleased();
 }
 
 void AFWPlayerCharacterBase::SwitchToFirstWeapon()

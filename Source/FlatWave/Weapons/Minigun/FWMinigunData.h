@@ -17,5 +17,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		float RotationRate = 720.f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		float WarmupTime = 0.f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UParticleSystem* BulletParticles;
 };

@@ -26,13 +26,11 @@ void UFWPlayerWeaponBase::Init(class UFWWeaponData* NewWeaponData, FVector Weapo
 	WeaponData = NewWeaponData;
 	SetRelativeLocation(WeaponOffset);
 	CurrentAmmo = WeaponData->MaxAmmo;
-	WarmupCounter = WeaponData->WarmupTime;
 	SetStaticMesh(WeaponData->Mesh);
 }
 
 void UFWPlayerWeaponBase::TriggerPressed()
 {
-	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("TriggerClicked"));
 	if (!WeaponData)
 	{
 		UE_LOG(LogFWPlayerWeapon, Warning, TEXT("No WeaponData!"));
@@ -41,23 +39,35 @@ void UFWPlayerWeaponBase::TriggerPressed()
 	if (CurrentAmmo <= 0)
 		return;
 	bTriggerPressed = true;
-	if (WeaponData->WarmupTime <= 0.f)
-	{
-		if (FireRateCounter <= 0.f)
-			FireProjectile();
-	}
-	else
-	{
-		WarmupCounter = WeaponData->WarmupTime;
-		FireRateCounter = WarmupCounter;
-	}
+	if (bCanFireOnPressed)
+		FireProjectile();
 }
 
 void UFWPlayerWeaponBase::TriggerReleased()
 {
-	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("TriggerReleased"));
 	bTriggerPressed = false;
-	WarmupCounter = WeaponData->WarmupTime;
+}
+
+void UFWPlayerWeaponBase::AltTriggerPressed()
+{
+	if (!WeaponData)
+	{
+		UE_LOG(LogFWPlayerWeapon, Warning, TEXT("No WeaponData!"));
+		return;
+	}
+	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerClicked"));
+	bAltTriggerPressed = true;
+}
+
+void UFWPlayerWeaponBase::AltTriggerReleased()
+{
+	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerReleased"));
+	bAltTriggerPressed = false;
+}
+
+bool UFWPlayerWeaponBase::CanFire()
+{
+	return CurrentAmmo > 0 && FireRateCounter < 0.f && bTriggerPressed;
 }
 
 AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
@@ -113,11 +123,6 @@ UFWWeaponData* UFWPlayerWeaponBase::GetWeaponData() const
 	return WeaponData;
 }
 
-float UFWPlayerWeaponBase::GetWarmupCounter()
-{
-	return WarmupCounter;
-}
-
 float UFWPlayerWeaponBase::GetFireRateCounter()
 {
 	return FireRateCounter;
@@ -126,18 +131,9 @@ float UFWPlayerWeaponBase::GetFireRateCounter()
 void UFWPlayerWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bTriggerPressed && WarmupCounter > 0.f)
-	{
-		WarmupCounter -= DeltaTime;
-	}
-
 	if (FireRateCounter > 0.f)
 	{
 		FireRateCounter -= DeltaTime;
-		if (CurrentAmmo > 0 && WeaponData->bFireContinuously && WarmupCounter <= 0.f && bTriggerPressed && FireRateCounter < 0.f)
-		{
-			FireProjectile();
-		}
 	}
 }
 
