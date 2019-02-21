@@ -4,6 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "FWProjectileData.h"
 #include "FWUtilities.h"
 #include "FWDamgeTypeBase.h"
@@ -21,6 +22,8 @@ AFWProjectile::AFWProjectile()
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
 	ProjectileMesh->SetupAttachment(RootComponent);
+
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 }
 
 void AFWProjectile::BeginPlay()
@@ -31,11 +34,6 @@ void AFWProjectile::BeginPlay()
 void AFWProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (ProjectileData && !ProjectileData->bSimulatePhysics)
-	{
-		FVector NewLocation = GetActorLocation() + GetActorForwardVector() * ProjectileData->InitialVelocity * DeltaTime;
-		SetActorLocation(NewLocation, true);
-	}
 }
 
 void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
@@ -43,11 +41,8 @@ void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
 	ProjectileData = NewProctileData;
 	if (ProjectileData)
 	{
-		if (ProjectileData->bSimulatePhysics)
-		{
-			ProjectileMesh->SetSimulatePhysics(true);
-			ProjectileMesh->AddImpulse(GetActorForwardVector());
-		}
+		ProjectileMovement->ProjectileGravityScale = ProjectileData->GravityScale;
+		ProjectileMovement->SetVelocityInLocalSpace(FVector(ProjectileData->InitialVelocity, 0.f, 0.f));
 		SetLifeSpan(ProjectileData->Lifetime);
 	}
 }
@@ -55,7 +50,7 @@ void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
 void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if (ProjectileData && OtherActor != GetInstigator())
+	if (ProjectileData && OtherActor != GetInstigator() && !Cast<AFWProjectile>(OtherActor))
 	{
 		if (ProjectileData->ImpactDamage > 0.f)
 		{

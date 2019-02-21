@@ -43,8 +43,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
-	void ShootProjectile();
-
+	virtual void ShootProjectile(AActor* TargetActor = nullptr);
+	virtual bool IsDoneFiring();
 protected:
 	void OnDeath() override;
 };

@@ -44,6 +44,23 @@ void AFWAIController::UnPossess()
 	Destroy();
 }
 
+void AFWAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+	if (Result.Code == EPathFollowingResult::Type::Success)
+	{
+		OnMoveSuccessful.Broadcast();
+	}
+	else if (Result.Code == EPathFollowingResult::Type::Aborted
+			 || Result.Code == EPathFollowingResult::Type::Blocked
+			 || Result.Code == EPathFollowingResult::Type::Invalid)
+	{
+		OnMoveFailed.Broadcast();
+	}
+
+	OnMoveDone.Broadcast();
+}
+
 void AFWAIController::SetTargetPlayer(class AFWPlayerCharacterBase* Player)
 {
 	if (BlackboardComponent)

@@ -33,6 +33,8 @@ void AFWEnemyHoverTank::Tick(float DeltaTime)
 
 void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTime, FVector Offset /*= FVector()*/)
 {
+	if (!Target)
+		return;
 	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = TurretComponent->GetComponentRotation();
@@ -44,6 +46,8 @@ void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTim
 
 void AFWEnemyHoverTank::RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset /*= FVector()*/)
 {
+	if (!Target)
+		return;
 	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = BarrelComponent->GetComponentRotation();
@@ -56,6 +60,8 @@ void AFWEnemyHoverTank::RotateBarrelTowardsTarget(AActor* Target, float DeltaTim
 
 bool AFWEnemyHoverTank::IsPointingAt(AActor* Target, float Tolerance /*= 5.f*/)
 {
+	if (!Target)
+		return false;
 	FVector DirectionTowardsTarget = GetActorLocation() - Target->GetActorLocation();
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = BarrelComponent->GetComponentRotation();
@@ -63,7 +69,7 @@ bool AFWEnemyHoverTank::IsPointingAt(AActor* Target, float Tolerance /*= 5.f*/)
 	return PointingDifference <= Tolerance;
 }
 
-void AFWEnemyHoverTank::ShootProjectile()
+void AFWEnemyHoverTank::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 {
 	if (ProjectileData)
 	{
@@ -77,11 +83,16 @@ void AFWEnemyHoverTank::ShootProjectile()
 	}
 }
 
+bool AFWEnemyHoverTank::IsDoneFiring()
+{
+	return true;
+}
+
 void AFWEnemyHoverTank::OnDeath()
 {
 	Super::OnDeath();
 	ChassisComponent->SetSimulatePhysics(true);
 	ChassisComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	ChassisComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
