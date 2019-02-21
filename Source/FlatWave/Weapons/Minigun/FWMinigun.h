@@ -13,8 +13,18 @@ class FLATWAVE_API UFWMinigun : public UFWPlayerWeaponBase
 public:
 	void Init(class UFWWeaponData* NewWeaponData, FVector WeaponOffset) override;
 	class AFWProjectile* FireProjectile() override;
+
+	void TriggerPressed() override;
+	void TriggerReleased() override;
+	void AltTriggerPressed() override;
+	void AltTriggerReleased() override;
+
+	bool CanStartWarmup();
+	bool CanFire() override;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		float GetWarmupCounter();
 protected:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	float WarmupCounter = 0.f;
 	class UParticleSystemComponent* MuzzleParticles;
 };

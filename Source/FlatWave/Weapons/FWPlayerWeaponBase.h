@@ -23,6 +23,11 @@ public:
 	virtual void TriggerPressed();
 	virtual void TriggerReleased();
 
+	virtual void AltTriggerPressed();
+	virtual void AltTriggerReleased();
+
+	virtual bool CanFire();
+
 	virtual class AFWProjectile* FireProjectile();
 
 	void ChangeAmmo(int32 Amount);
@@ -37,17 +42,15 @@ public:
 		class UFWWeaponData* GetWeaponData() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		float GetWarmupCounter();
-	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetFireRateCounter();
 
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 	float FireRateCounter = 0.f;
-	float WarmupCounter = 0.f;
-	bool bStartCounters = false;
+	bool bCanFireOnPressed = true;
 	bool bTriggerPressed = false;
+	bool bAltTriggerPressed = false;
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWWeaponData* WeaponData;

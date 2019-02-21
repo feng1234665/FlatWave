@@ -27,8 +27,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		float MaxSpread = 0.f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		float WarmupTime = 0.f;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		int32 MaxAmmo = 100;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		int32 AmmoCostPerShot = 1;

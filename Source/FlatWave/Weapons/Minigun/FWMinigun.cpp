@@ -24,6 +24,8 @@ void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
 																 FRotator::ZeroRotator,
 																 EAttachLocation::SnapToTarget,
 																 false);
+	WarmupCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+	bCanFireOnPressed = false;
 }
 
 AFWProjectile* UFWMinigun::FireProjectile()
@@ -51,13 +53,67 @@ AFWProjectile* UFWMinigun::FireProjectile()
 	return SpawnedProjectile;
 }
 
+void UFWMinigun::TriggerPressed()
+{
+	Super::TriggerPressed();
+	if (!bAltTriggerPressed)
+	{
+		FireRateCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+	}
+}
+
+void UFWMinigun::TriggerReleased()
+{
+	Super::TriggerReleased();
+}
+
+void UFWMinigun::AltTriggerPressed()
+{
+	Super::AltTriggerPressed();
+}
+
+void UFWMinigun::AltTriggerReleased()
+{
+	Super::AltTriggerReleased();
+}
+
+bool UFWMinigun::CanStartWarmup()
+{
+	return bTriggerPressed || bAltTriggerPressed;
+}
+
+bool UFWMinigun::CanFire()
+{
+	return (bTriggerPressed || ((bTriggerPressed && bAltTriggerPressed))) && WarmupCounter >= GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+}
+
+float UFWMinigun::GetWarmupCounter()
+{
+	return WarmupCounter;
+}
+
 void UFWMinigun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (WarmupCounter <= 0.f)
+	if (FireRateCounter <= 0.f && WeaponData->bFireContinuously && CanFire())
 	{
-		float Rate = GetWeaponDataAs<UFWMinigunData>()->RotationRate * DeltaTime;
-		FRotator Rotation(0.f, 0.f, Rate);
+		FireProjectile();
+	}
+	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
+	if (CanStartWarmup())
+	{
+		WarmupCounter = FMath::Clamp(WarmupCounter + DeltaTime, 0.f, Data->WarmupTime);
+		float WarmupPercent = WarmupCounter / Data->WarmupTime;
+		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
+		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
+		AddRelativeRotation(Rotation);
+	}
+	else
+	{
+		WarmupCounter = FMath::Clamp(WarmupCounter - DeltaTime, 0.f, Data->WarmupTime);
+		float WarmupPercent = WarmupCounter / Data->WarmupTime;
+		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
+		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
 		AddRelativeRotation(Rotation);
 	}
 }
