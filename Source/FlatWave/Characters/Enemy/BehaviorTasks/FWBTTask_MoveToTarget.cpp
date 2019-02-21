@@ -10,6 +10,7 @@ UFWBTTask_MoveToTarget::UFWBTTask_MoveToTarget()
 {
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
+	NodeName = "MoveToTarget";
 }
 
 EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
