@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FWBTDecorator_IsTargetVisible.h"
-#include "FWEnemyHoverTank.h"
+#include "Tank/FWEnemyHoverTank.h"
 #include "FWAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 

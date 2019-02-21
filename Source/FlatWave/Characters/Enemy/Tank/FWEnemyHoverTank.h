@@ -29,7 +29,7 @@ protected:
 
 public:
 	void RotateTurretTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector());
-	void RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector());
+	virtual void RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector());
 	UPROPERTY(EditDefaultsOnly)
 		float TurretRotationSpeed = 15.f;
 	UPROPERTY(EditDefaultsOnly)
@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float BarrelMaxPitch = 45.f;
 
-	bool IsPointingAt(AActor* Target, float Tolerance = 5.f);
+	virtual bool IsPointingAt(AActor* Target, float Tolerance = 5.f);
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;

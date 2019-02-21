@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/Enemy/FWEnemyHoverTank.h"
+#include "Tank/FWEnemyHoverTank.h"
 #include "FWEnemyHoverRocketArtillery.generated.h"
 
 /**
@@ -15,6 +15,8 @@ class FLATWAVE_API AFWEnemyHoverRocketArtillery : public AFWEnemyHoverTank
 	GENERATED_BODY()
 public:
 	void ShootProjectile(AActor* TargetActor = nullptr) override;
+	void RotateBarrelTowardsTarget(AActor* Target, float DeltaTime, FVector Offset = FVector()) override;
+	bool IsPointingAt(AActor* Target, float Tolerance = 5.f) override;
 	UPROPERTY(EditDefaultsOnly)
 		int32 AmountRocketsPerSalvo = 8;
 	UPROPERTY(EditDefaultsOnly)
