@@ -47,6 +47,11 @@ void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
 	}
 }
 
+class UProjectileMovementComponent* AFWProjectile::GetProjectileMovement() const
+{
+	return ProjectileMovement;
+}
+
 void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);

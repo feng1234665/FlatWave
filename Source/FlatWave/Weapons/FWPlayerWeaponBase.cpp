@@ -39,7 +39,7 @@ void UFWPlayerWeaponBase::TriggerPressed()
 	if (CurrentAmmo <= 0)
 		return;
 	bTriggerPressed = true;
-	if (bCanFireOnPressed)
+	if (bCanFireOnPressed && CanFire())
 		FireProjectile();
 }
 
@@ -67,14 +67,14 @@ void UFWPlayerWeaponBase::AltTriggerReleased()
 
 bool UFWPlayerWeaponBase::CanFire()
 {
-	return CurrentAmmo > 0 && FireRateCounter < 0.f && bTriggerPressed;
+	return CurrentAmmo > 0 && FireRateCounter <= 0.f && bTriggerPressed;
 }
 
 AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
 {
 	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("FireProjectileBase"));
 	ConsumeAmmo();
-	FireRateCounter = 1 / (WeaponData->FireRate / 60.f);
+	FireRateCounter = GetFireRatePerSecond();
 	if (WeaponData->FireSound)
 		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
 	if (WeaponData->ProjectileData && WeaponData->ProjectileData->ProjectileClass)
@@ -126,6 +126,11 @@ UFWWeaponData* UFWPlayerWeaponBase::GetWeaponData() const
 float UFWPlayerWeaponBase::GetFireRateCounter()
 {
 	return FireRateCounter;
+}
+
+float UFWPlayerWeaponBase::GetFireRatePerSecond()
+{
+	return 1 / (WeaponData->FireRate / 60.f);
 }
 
 void UFWPlayerWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

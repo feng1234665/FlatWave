@@ -44,6 +44,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetFireRateCounter();
 
+	float GetFireRatePerSecond();
+
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
