@@ -29,5 +29,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
 
+	class UProjectileMovementComponent* GetProjectileMovement() const;
+
 	void NotifyActorBeginOverlap(AActor* OtherActor);
 };

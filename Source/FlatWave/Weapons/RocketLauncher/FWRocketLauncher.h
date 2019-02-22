@@ -11,4 +11,19 @@ class FLATWAVE_API UFWRocketLauncher : public UFWPlayerWeaponBase
 {
 	GENERATED_BODY()
 public:
+
+	void Init(class UFWWeaponData* WeaponData, FVector Offset);
+
+	void AltTriggerPressed() override;
+	void AltTriggerReleased() override;
+
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	class AFWProjectile* FireProjectile() override;
+
+private:
+	FVector InitialRelativeLocation;
+	bool bFiringChargedRockets = false;
+	int32 AmountRocketsCharged = 0;
+	float ChargedRocketsFireCounter = 0.f;
+	float ChargedRocketsChargeCounter = 0.f;
 };
