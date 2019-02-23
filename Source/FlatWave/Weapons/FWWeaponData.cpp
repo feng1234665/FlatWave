@@ -2,3 +2,7 @@
 
 #include "FWWeaponData.h"
 
+EWeaponType UFWWeaponData::GetWeaponType()
+{
+	return Type;
+}

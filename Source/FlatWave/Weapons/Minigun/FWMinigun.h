@@ -12,6 +12,8 @@ class FLATWAVE_API UFWMinigun : public UFWPlayerWeaponBase
 	GENERATED_BODY()
 public:
 	void Init(class UFWWeaponData* NewWeaponData, FVector WeaponOffset) override;
+	void UnequipWeapon() override;
+
 	class AFWProjectile* FireProjectile() override;
 
 	void TriggerPressed() override;

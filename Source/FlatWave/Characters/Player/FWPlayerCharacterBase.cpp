@@ -10,6 +10,7 @@
 #include "FWPlayerController.h"
 #include "FlatWave.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
@@ -49,6 +50,24 @@ void AFWPlayerCharacterBase::BeginPlay()
 		CurrentWeapon = WeaponComponents[Weapons[0]->Type];
 		CurrentWeapon->SetVisibility(true);
 	}
+}
+
+void AFWPlayerCharacterBase::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	bCanDodge = true;
+}
+
+void AFWPlayerCharacterBase::EquipWeapon(int32 Index)
+{
+	if (CurrentWeapon && CurrentWeapon->GetWeaponData() != Weapons[Index])
+	{
+		CurrentWeapon->SetVisibility(false);
+		CurrentWeapon->UnequipWeapon();
+	}
+	CurrentWeapon = WeaponComponents[Weapons[Index]->Type];
+	CurrentWeapon->EquipWeapon();
+	CurrentWeapon->SetVisibility(true);
 }
 
 float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -101,24 +120,12 @@ void AFWPlayerCharacterBase::OnAltTriggerReleased()
 
 void AFWPlayerCharacterBase::SwitchToFirstWeapon()
 {
-	if (CurrentWeapon && CurrentWeapon->GetWeaponData() != Weapons[0])
-	{
-		CurrentWeapon->SetVisibility(false);
-		CurrentWeapon->TriggerReleased();
-	}
-	CurrentWeapon = WeaponComponents[Weapons[0]->Type];
-	CurrentWeapon->SetVisibility(true);
+	EquipWeapon(0);
 }
 
 void AFWPlayerCharacterBase::SwitchToSecondWeapon()
 {
-	if (CurrentWeapon && CurrentWeapon->GetWeaponData() != Weapons[1])
-	{
-		CurrentWeapon->SetVisibility(false);
-		CurrentWeapon->TriggerReleased();
-	}
-	CurrentWeapon = WeaponComponents[Weapons[1]->Type];
-	CurrentWeapon->SetVisibility(true);
+	EquipWeapon(1);
 }
 
 void AFWPlayerCharacterBase::MoveForward(float Value)
@@ -150,4 +157,19 @@ void AFWPlayerCharacterBase::JumpPressed()
 void AFWPlayerCharacterBase::JumpReleased()
 {
 	StopJumping();
+}
+
+void AFWPlayerCharacterBase::DodgePressed()
+{
+	if (bCanDodge)
+	{
+		FVector CurrentMoveDirection = GetMovementComponent()->GetLastInputVector();
+		if (CurrentMoveDirection.Size() < 0.1f)
+			return;
+		bCanDodge = false;
+		CurrentMoveDirection.Z = DodgeVerticalPart;
+		CurrentMoveDirection.Normalize();
+		FVector LaunchVelocity = CurrentMoveDirection * DodgeVelocity;
+		LaunchCharacter(LaunchVelocity, true, true);
+	}
 }

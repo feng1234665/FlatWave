@@ -13,6 +13,15 @@ void UFWRocketLauncher::Init(class UFWWeaponData* NewWeaponData, FVector Offset)
 	InitialRelativeLocation = GetRelativeTransform().GetLocation();
 }
 
+void UFWRocketLauncher::UnequipWeapon()
+{
+	Super::UnequipWeapon();
+	ChargedRocketsChargeCounter = 0.f;
+	AmountRocketsCharged = 0;
+	bFiringChargedRockets = false;
+	SetRelativeLocation(InitialRelativeLocation);
+}
+
 void UFWRocketLauncher::AltTriggerPressed()
 {
 	Super::AltTriggerPressed();
@@ -26,6 +35,7 @@ void UFWRocketLauncher::AltTriggerReleased()
 	{
 		bFiringChargedRockets = true;
 		ChargedRocketsFireCounter = GetWeaponDataAs<UFWRocketLauncherData>()->TimeBetweenChargedRockets;
+		ChargedRocketsChargeCounter = 0.f;
 	}
 }
 
@@ -73,4 +83,14 @@ class AFWProjectile* UFWRocketLauncher::FireProjectile()
 	FVector CurrentLocalLocation = GetRelativeTransform().GetLocation();
 	SetRelativeLocation(CurrentLocalLocation + FVector(-20.f, 0.f, 0.f));
 	return FiredRocket;
+}
+
+int32 UFWRocketLauncher::GetChargeAmount()
+{
+	return AmountRocketsCharged;
+}
+
+float UFWRocketLauncher::GetChargePercent()
+{
+	return ChargedRocketsChargeCounter / GetWeaponDataAs<UFWRocketLauncherData>()->TimeToChargeRocket;
 }
