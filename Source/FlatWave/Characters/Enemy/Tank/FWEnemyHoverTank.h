@@ -46,5 +46,5 @@ public:
 	virtual void ShootProjectile(AActor* TargetActor = nullptr);
 	virtual bool IsDoneFiring();
 protected:
-	void OnDeath() override;
+	virtual void OnDeath() override;
 };

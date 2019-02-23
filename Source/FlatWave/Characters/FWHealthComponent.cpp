@@ -25,17 +25,20 @@ float UFWHealthComponent::GetHealthPercent()
 	return (float)CurrentHealth / MaxHealth;
 }
 
-void UFWHealthComponent::ChangeHealth(float Amount)
+float UFWHealthComponent::ChangeHealth(float Amount)
 {
+	float HealthBefore = CurrentHealth;
 	CurrentHealth = FMath::Clamp(CurrentHealth + Amount, 0.f, MaxHealth);
 	if (CurrentHealth >= MaxHealth)
 	{
 		OnFullHealth.Broadcast();
 	}
-	else if (CurrentHealth <= 0.f)
+	else if (CurrentHealth <= 0.f && HealthBefore > 0.f)
 	{
 		OnDeath.Broadcast();
 	}
+	UE_LOG(LogTemp, Warning, TEXT("%f"), CurrentHealth);
+	return CurrentHealth - HealthBefore;
 }
 
 void UFWHealthComponent::Reset()

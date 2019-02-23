@@ -36,7 +36,10 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 				return EBTNodeResult::Succeeded;
 			}
 			if (bWaitForTargetReached)
+			{
+				Controller->OnMoveSuccessful.RemoveDynamic(this, &UFWBTTask_MoveToTarget::OnTargetReached);
 				Controller->OnMoveSuccessful.AddDynamic(this, &UFWBTTask_MoveToTarget::OnTargetReached);
+			}
 			return bWaitForTargetReached ? EBTNodeResult::InProgress : EBTNodeResult::Succeeded;
 		}
 	}
@@ -54,7 +57,10 @@ EBTNodeResult::Type UFWBTTask_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& 
 			return EBTNodeResult::Failed;
 		}
 		if (bWaitForTargetReached)
+		{
+			Controller->OnMoveSuccessful.RemoveDynamic(this, &UFWBTTask_MoveToTarget::OnTargetReached);
 			Controller->OnMoveSuccessful.AddDynamic(this, &UFWBTTask_MoveToTarget::OnTargetReached);
+		}
 		return bWaitForTargetReached ? EBTNodeResult::InProgress : EBTNodeResult::Succeeded;
 	}
 
