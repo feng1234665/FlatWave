@@ -68,28 +68,31 @@ void AFWEnemyHoverRocketArtillery::Tick(float DeltaTime)
 
 void AFWEnemyHoverRocketArtillery::FireRocket(AActor* Target)
 {
-	if (Target)
-	{
-		FVector Velocity;
-		FVector StartLocation = MuzzleLocationComponent->GetComponentLocation();
-		StartLocation += MuzzleLocationComponent->GetRightVector() * FMath::RandRange(-100.f, 100.f);
-		FVector TargetLocation = Target->GetActorLocation();
-		float CustomGravity = ProjectileData->GravityScale * GetWorld()->GetGravityZ();
-		UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, Velocity, StartLocation, TargetLocation, CustomGravity);
-		if (true)
-		{
-			FVector MuzzleLocation = MuzzleLocationComponent->GetComponentLocation();
-			Velocity.Normalize();
-			FRotator Direction = Velocity.Rotation();
-			FActorSpawnParameters Params;
-			Params.Instigator = this;
-			AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
-			if (SpawnedProjectile)
-			{
-				SpawnedProjectile->Init(ProjectileData);
-				SpawnedProjectile->GetProjectileMovement()->HomingTargetComponent = UGameplayStatics::GetPlayerController(this, 0)->GetPawn()->GetRootComponent();
-			}
+	if (!Target)
+		return;
+	FVector Velocity;
+	FVector StartLocation = MuzzleLocationComponent->GetComponentLocation();
+	StartLocation += MuzzleLocationComponent->GetRightVector() * FMath::RandRange(-100.f, 100.f);
+	FVector TargetLocation = Target->GetActorLocation() + Target->GetVelocity() * VelocityPredictionScale;
+	float CustomGravity = ProjectileData->GravityScale * GetWorld()->GetGravityZ();
 
+	if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, Velocity, StartLocation, TargetLocation, CustomGravity))
+	{
+		FVector MuzzleLocation = MuzzleLocationComponent->GetComponentLocation();
+		FVector Direction = Velocity;
+		Direction.Normalize();
+		FRotator Rotation = Direction.Rotation();
+		FActorSpawnParameters Params;
+		Params.Instigator = this;
+		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Rotation, Params);
+		if (SpawnedProjectile)
+		{
+			SpawnedProjectile->Init(ProjectileData, FVector(Velocity.Size(), 0.f, 0.f));
+			SpawnedProjectile->GetProjectileMovement()->HomingTargetComponent = Target->GetRootComponent();
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("wat"));
 	}
 }

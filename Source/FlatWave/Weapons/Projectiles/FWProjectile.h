@@ -25,6 +25,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 public:
 	void Init(class UFWProjectileData* NewProctileData);
+	void Init(class UFWProjectileData* NewProctileData, FVector CustomInitialVelocity);
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
