@@ -6,9 +6,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "FWPlayerWeaponBase.generated.h"
 
-/**
- *
- */
 UCLASS()
 class FLATWAVE_API UFWPlayerWeaponBase : public UStaticMeshComponent
 {
@@ -19,6 +16,9 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Init(class UFWWeaponData* WeaponData, FVector Offset);
+
+	virtual void EquipWeapon();
+	virtual void UnequipWeapon();
 
 	virtual void TriggerPressed();
 	virtual void TriggerReleased();

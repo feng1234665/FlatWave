@@ -18,6 +18,9 @@ class FLATWAVE_API UFWWeaponData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		EWeaponType GetWeaponType();
+public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		EWeaponType Type;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

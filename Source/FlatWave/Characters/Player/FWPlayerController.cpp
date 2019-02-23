@@ -10,6 +10,8 @@ void AFWPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AFWPlayerController::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &AFWPlayerController::StopJump);
 
+	InputComponent->BindAction("Dodge", IE_Pressed, this, &AFWPlayerController::DodgePressed);
+
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AFWPlayerController::OnTriggerPressed);
 	InputComponent->BindAction("Fire", IE_Released, this, &AFWPlayerController::OnTriggerReleased);
 
@@ -84,6 +86,12 @@ void AFWPlayerController::StopJump()
 {
 	if (GetPawn())
 		GetPlayerPawn()->JumpReleased();
+}
+
+void AFWPlayerController::DodgePressed()
+{
+	if (GetPawn())
+		GetPlayerPawn()->DodgePressed();
 }
 
 class AFWPlayerCharacterBase* AFWPlayerController::GetPlayerPawn() const

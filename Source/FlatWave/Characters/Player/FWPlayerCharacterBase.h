@@ -21,11 +21,20 @@ protected:
 	virtual void BeginPlay();
 
 	UPROPERTY(EditDefaultsOnly)
+		float DodgeVerticalPart = 0.1f;
+	UPROPERTY(EditDefaultsOnly)
+		float DodgeVelocity = 1000.f;
+	bool bCanDodge = true;
+	void Landed(const FHitResult& Hit);
+
+	UPROPERTY(EditDefaultsOnly)
 		FVector WeaponOffset;
 	class UFWPlayerWeaponBase* CurrentWeapon;
 	UPROPERTY(EditDefaultsOnly)
 		TArray<class UFWWeaponData*> Weapons;
 	TMap<EWeaponType, class UFWPlayerWeaponBase*> WeaponComponents;
+	void EquipWeapon(int32 Index);
+
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = Audio)
@@ -52,6 +61,8 @@ public:
 
 	void JumpPressed();
 	void JumpReleased();
+
+	void DodgePressed();
 public:
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const
 	{

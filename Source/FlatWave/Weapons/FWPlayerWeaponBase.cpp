@@ -29,6 +29,17 @@ void UFWPlayerWeaponBase::Init(class UFWWeaponData* NewWeaponData, FVector Weapo
 	SetStaticMesh(WeaponData->Mesh);
 }
 
+void UFWPlayerWeaponBase::EquipWeapon()
+{
+
+}
+
+void UFWPlayerWeaponBase::UnequipWeapon()
+{
+	bTriggerPressed = false;
+	bAltTriggerPressed = false;
+}
+
 void UFWPlayerWeaponBase::TriggerPressed()
 {
 	if (!WeaponData)

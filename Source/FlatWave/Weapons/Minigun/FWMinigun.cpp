@@ -28,6 +28,12 @@ void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
 	bCanFireOnPressed = false;
 }
 
+void UFWMinigun::UnequipWeapon()
+{
+	Super::UnequipWeapon();
+	WarmupCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+}
+
 AFWProjectile* UFWMinigun::FireProjectile()
 {
 	AFWProjectile* SpawnedProjectile = Super::FireProjectile();
@@ -84,7 +90,7 @@ bool UFWMinigun::CanStartWarmup()
 
 bool UFWMinigun::CanFire()
 {
-	return (bTriggerPressed || ((bTriggerPressed && bAltTriggerPressed))) && WarmupCounter >= GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+	return (bTriggerPressed || ((bTriggerPressed && bAltTriggerPressed))) && WarmupCounter >= GetWeaponDataAs<UFWMinigunData>()->WarmupTime && CurrentAmmo > 0;
 }
 
 float UFWMinigun::GetWarmupCounter()

@@ -13,12 +13,18 @@ class FLATWAVE_API UFWRocketLauncher : public UFWPlayerWeaponBase
 public:
 
 	void Init(class UFWWeaponData* WeaponData, FVector Offset);
+	void UnequipWeapon() override;
 
 	void AltTriggerPressed() override;
 	void AltTriggerReleased() override;
 
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	class AFWProjectile* FireProjectile() override;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		int32 GetChargeAmount();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		float GetChargePercent();
 
 private:
 	FVector InitialRelativeLocation;
