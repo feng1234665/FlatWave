@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float TimeBetweenRocketFire = .3f;
 	UPROPERTY(EditDefaultsOnly)
-		bool bUseHighArc = false;
+		float VelocityPredictionScale = 1.0f;
 
 	bool IsDoneFiring() override;
 protected:

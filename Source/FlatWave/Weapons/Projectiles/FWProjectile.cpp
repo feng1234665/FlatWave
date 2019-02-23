@@ -38,11 +38,17 @@ void AFWProjectile::Tick(float DeltaTime)
 
 void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
 {
-	ProjectileData = NewProctileData;
-	if (ProjectileData)
+	if (NewProctileData)
+		Init(NewProctileData, FVector(NewProctileData->InitialVelocity, 0.f, 0.f));
+}
+
+void AFWProjectile::Init(class UFWProjectileData* NewProctileData, FVector CustomInitialVelocity)
+{
+	if (NewProctileData)
 	{
+		ProjectileData = NewProctileData;
 		ProjectileMovement->ProjectileGravityScale = ProjectileData->GravityScale;
-		ProjectileMovement->SetVelocityInLocalSpace(FVector(ProjectileData->InitialVelocity, 0.f, 0.f));
+		ProjectileMovement->SetVelocityInLocalSpace(CustomInitialVelocity);
 		SetLifeSpan(ProjectileData->Lifetime);
 	}
 }
