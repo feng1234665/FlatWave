@@ -122,8 +122,6 @@ void AFWMainGameMode::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase
 	{
 		return;
 	}
-	int32 AmountPerSpawner = Amount / EnemySpawners.Num();
-	int32 SpawnsLeft = Amount;
 	TArray<AFWEnemySpawner*> FittingSpawners = EnemySpawners.FilterByPredicate([EnemyClass](AFWEnemySpawner* Spawner)
 	{
 		return Spawner->IsSpawningClass(EnemyClass);
@@ -133,6 +131,8 @@ void AFWMainGameMode::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase
 		UE_LOG(LogTemp, Warning, TEXT("No fitting spawners for class %s found!"), *EnemyClass->GetName());
 		return;
 	}
+	int32 AmountPerSpawner = Amount / FittingSpawners.Num();
+	int32 SpawnsLeft = Amount;
 	UFWUtilities::ShuffleArray<AFWEnemySpawner*>(FittingSpawners);
 	for (int32 Index = 0; Index < FittingSpawners.Num(); Index++)
 	{

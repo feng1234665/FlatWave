@@ -16,7 +16,8 @@ class FLATWAVE_API AFWEnemyCharacterBase : public AFWCharacter
 public:
 	UPROPERTY(EditDefaultsOnly)
 		class UBehaviorTree* BehaviorTree;
-
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UFWFloatingDamageComponent> FloatingDamageClass;
 protected:
 	void OnDeath() override;
 	UPROPERTY(EditDefaultsOnly)

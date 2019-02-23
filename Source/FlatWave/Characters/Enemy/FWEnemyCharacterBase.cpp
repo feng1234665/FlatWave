@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "FWAIController.h"
 #include "TimerManager.h"
+#include "FWFloatingDamageComponent.h"
 
 void AFWEnemyCharacterBase::OnDeath()
 {
@@ -22,7 +23,16 @@ float AFWEnemyCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent 
 {
 	if (DamageCauser->Instigator != this && !Cast<AFWAIController>(EventInstigator))
 	{
-		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+		if (FMath::Abs(ActualDamage) > 0.f)
+		{
+			UFWFloatingDamageComponent* FloatingDamage = NewObject<UFWFloatingDamageComponent>(this, FloatingDamageClass);
+			FloatingDamage->RegisterComponent();
+			FloatingDamage->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+			FloatingDamage->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+			FloatingDamage->SetDamageValue(FMath::Abs(ActualDamage));
+		}
+		return ActualDamage;
 	}
 	return 0.f;
 }

@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 void AFWEnemyHoverRocketArtillery::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 {
@@ -76,8 +77,6 @@ void AFWEnemyHoverRocketArtillery::FireRocket(AActor* Target)
 		float CustomGravity = ProjectileData->GravityScale * GetWorld()->GetGravityZ();
 		UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, Velocity, StartLocation, TargetLocation, CustomGravity);
 		if (true)
-			//if (UGameplayStatics::SuggestProjectileVelocity(this, Velocity, StartLocation, TargetLocation, ProjectileData->InitialVelocity, bUseHighArc,
-			//	0.f, CustomGravity, ESuggestProjVelocityTraceOption::DoNotTrace, FCollisionResponseParams::DefaultResponseParam, TArray<AActor*>(), true))
 		{
 			FVector MuzzleLocation = MuzzleLocationComponent->GetComponentLocation();
 			Velocity.Normalize();
@@ -86,7 +85,11 @@ void AFWEnemyHoverRocketArtillery::FireRocket(AActor* Target)
 			Params.Instigator = this;
 			AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
 			if (SpawnedProjectile)
+			{
 				SpawnedProjectile->Init(ProjectileData);
+				SpawnedProjectile->GetProjectileMovement()->HomingTargetComponent = UGameplayStatics::GetPlayerController(this, 0)->GetPawn()->GetRootComponent();
+			}
+
 		}
 	}
 }

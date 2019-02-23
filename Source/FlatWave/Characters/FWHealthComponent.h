@@ -28,7 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetHealthPercent();
 	UFUNCTION(BlueprintCallable)
-		void ChangeHealth(float Amount);
+		float ChangeHealth(float Amount);
 	void Reset();
 
 	UPROPERTY(BlueprintAssignable)

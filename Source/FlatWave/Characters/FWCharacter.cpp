@@ -35,8 +35,12 @@ void AFWCharacter::Tick(float DeltaTime)
 
 float AFWCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	UE_LOG(LogFWCharacter, Warning, TEXT("Taken Damage: %f from Actor: %s"), DamageAmount, *DamageCauser->GetHumanReadableName());
-	HealthComponent->ChangeHealth(-DamageAmount);
-	return DamageAmount;
+	float ActualDamage = 0.f;
+	if (HealthComponent->GetHealth() > 0.f)
+	{
+		UE_LOG(LogFWCharacter, Warning, TEXT("Taken Damage: %f from Actor: %s"), DamageAmount, *DamageCauser->GetHumanReadableName());
+		ActualDamage = HealthComponent->ChangeHealth(-DamageAmount);
+	}
+	return ActualDamage;
 }
 

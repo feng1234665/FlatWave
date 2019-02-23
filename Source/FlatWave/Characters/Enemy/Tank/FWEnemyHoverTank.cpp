@@ -94,5 +94,4 @@ void AFWEnemyHoverTank::OnDeath()
 	ChassisComponent->SetSimulatePhysics(true);
 	ChassisComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	ChassisComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
