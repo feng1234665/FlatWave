@@ -7,6 +7,7 @@
 #include "FWPlayerCharacterBase.h"
 #include "FWProjectile.h"
 #include "FWProjectileData.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AFWEnemyHoverTank::AFWEnemyHoverTank()
 {
@@ -35,7 +36,7 @@ void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTim
 {
 	if (!Target)
 		return;
-	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
+	FVector DirectionTowardsTarget = (Target->GetActorLocation() + Offset) - GetActorLocation();
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = TurretComponent->GetComponentRotation();
 	FRotator TargetRotation = DirectionTowardsTarget.Rotation();
@@ -48,7 +49,7 @@ void AFWEnemyHoverTank::RotateBarrelTowardsTarget(AActor* Target, float DeltaTim
 {
 	if (!Target)
 		return;
-	FVector DirectionTowardsTarget = GetActorLocation() - (Target->GetActorLocation() + Offset);
+	FVector DirectionTowardsTarget = (Target->GetActorLocation() + Offset) - GetActorLocation();
 	DirectionTowardsTarget.Normalize();
 	FRotator CurrentRotation = BarrelComponent->GetComponentRotation();
 	FRotator TargetRotation = DirectionTowardsTarget.Rotation();
