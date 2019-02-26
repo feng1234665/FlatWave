@@ -18,6 +18,8 @@ public:
 	void AltTriggerPressed() override;
 	void AltTriggerReleased() override;
 
+	bool CanFire() override;
+
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	class AFWProjectile* FireProjectile() override;
 
