@@ -27,6 +27,10 @@ float UFWHealthComponent::GetHealthPercent()
 
 float UFWHealthComponent::ChangeHealth(float Amount)
 {
+	if (bIsInvincible)
+	{
+		return Amount;
+	}
 	float HealthBefore = CurrentHealth;
 	CurrentHealth = FMath::Clamp(CurrentHealth + Amount, 0.f, MaxHealth);
 	if (CurrentHealth >= MaxHealth)
@@ -37,7 +41,6 @@ float UFWHealthComponent::ChangeHealth(float Amount)
 	{
 		OnDeath.Broadcast();
 	}
-	UE_LOG(LogTemp, Warning, TEXT("%f"), CurrentHealth);
 	return CurrentHealth - HealthBefore;
 }
 

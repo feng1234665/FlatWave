@@ -20,6 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		float MaxHealth = 1000;
+	UPROPERTY(EditAnywhere)
+		bool bIsInvincible = false;
 	UPROPERTY()
 		float CurrentHealth = 1000;
 public:
