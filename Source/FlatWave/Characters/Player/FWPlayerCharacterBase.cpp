@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FWPlayerCharacterBase.h"
-#include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SceneComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "FWRocketLauncher.h"
 #include "FWMinigun.h"
 #include "FWHealthComponent.h"
 #include "FWPlayerController.h"
 #include "FlatWave.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/PawnMovementComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
@@ -24,6 +24,9 @@ AFWPlayerCharacterBase::AFWPlayerCharacterBase()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	WeaponComponentParent = CreateDefaultSubobject<USceneComponent>("WeaponComponentParent");
+	WeaponComponentParent->SetupAttachment(FirstPersonCameraComponent);
 }
 
 void AFWPlayerCharacterBase::BeginPlay()
@@ -38,7 +41,7 @@ void AFWPlayerCharacterBase::BeginPlay()
 	{
 		FName ComponentName(*GETENUMSTRING("EWeaponType", Weapon->Type));
 		UFWPlayerWeaponBase* WeaponComponent = NewObject<UFWPlayerWeaponBase>(this, Weapon->WeaponClass, ComponentName);
-		WeaponComponent->AttachToComponent(FirstPersonCameraComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		WeaponComponent->AttachToComponent(WeaponComponentParent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 		WeaponComponent->RegisterComponent();
 		WeaponComponent->SetVisibility(false);
 		WeaponComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
