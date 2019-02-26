@@ -39,11 +39,16 @@ void UFWRocketLauncher::AltTriggerReleased()
 	}
 }
 
+bool UFWRocketLauncher::CanFire()
+{
+	return Super::CanFire() && !bFiringChargedRockets && !bAltTriggerPressed;
+}
+
 void UFWRocketLauncher::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	UFWRocketLauncherData* Data = GetWeaponDataAs<UFWRocketLauncherData>();
-	if (bAltTriggerPressed && AmountRocketsCharged < Data->MaxRocketsChargable)
+	if (bAltTriggerPressed && AmountRocketsCharged < Data->MaxRocketsChargable && CurrentAmmo > 0)
 	{
 		ChargedRocketsChargeCounter += DeltaTime;
 		if (ChargedRocketsChargeCounter >= Data->TimeToChargeRocket)
