@@ -20,4 +20,8 @@ public:
 		float WarmupTime = 0.f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UParticleSystem* BulletParticles;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		class UParticleSystem* ShellParticles;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		FVector ShellOffset;
 };

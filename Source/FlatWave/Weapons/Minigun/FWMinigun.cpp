@@ -16,28 +16,42 @@
 void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
 {
 	Super::Init(NewWeaponData, WeaponOffset);
-	if (WeaponData->MuzzleParticles)
-		MuzzleParticles = UGameplayStatics::SpawnEmitterAttached(WeaponData->MuzzleParticles,
-																 this,
+	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
+	if (Data->MuzzleParticles)
+	{
+		MuzzleParticles = UGameplayStatics::SpawnEmitterAttached(Data->MuzzleParticles,
+																 GetOwnerCharacter()->GetWeaponComponentParent(),
 																 NAME_None,
 																 WeaponData->MuzzleOffset,
 																 FRotator::ZeroRotator,
-																 EAttachLocation::SnapToTarget,
+																 EAttachLocation::KeepRelativeOffset,
 																 false);
-	WarmupCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+		MuzzleParticles->SetAutoActivate(false);
+	}
+	if (Data->ShellParticles)
+	{
+		ShellParticles = UGameplayStatics::SpawnEmitterAttached(Data->ShellParticles,
+																GetOwnerCharacter()->GetWeaponComponentParent(),
+																NAME_None,
+																Data->ShellOffset,
+																FRotator::ZeroRotator,
+																EAttachLocation::KeepRelativeOffset,
+																false);
+	}
 	bCanFireOnPressed = false;
+	WarmupCounter = 0.f;
 }
 
 void UFWMinigun::UnequipWeapon()
 {
 	Super::UnequipWeapon();
-	WarmupCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
 }
 
 AFWProjectile* UFWMinigun::FireProjectile()
 {
 	AFWProjectile* SpawnedProjectile = Super::FireProjectile();
 	MuzzleParticles->ActivateSystem();
+	ShellParticles->ActivateSystem();
 	TArray<FHitResult> Hits;
 	FVector Start = GetProjectileSpawnLocation();
 	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * WeaponData->ProjectileData->MaxRange;
@@ -68,21 +82,6 @@ void UFWMinigun::TriggerPressed()
 	}
 }
 
-void UFWMinigun::TriggerReleased()
-{
-	Super::TriggerReleased();
-}
-
-void UFWMinigun::AltTriggerPressed()
-{
-	Super::AltTriggerPressed();
-}
-
-void UFWMinigun::AltTriggerReleased()
-{
-	Super::AltTriggerReleased();
-}
-
 bool UFWMinigun::CanStartWarmup()
 {
 	return bTriggerPressed || bAltTriggerPressed;
@@ -101,11 +100,11 @@ float UFWMinigun::GetWarmupCounter()
 void UFWMinigun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
 	if (FireRateCounter <= 0.f && WeaponData->bFireContinuously && CanFire())
 	{
 		FireProjectile();
 	}
-	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
 	if (CanStartWarmup())
 	{
 		WarmupCounter = FMath::Clamp(WarmupCounter + DeltaTime, 0.f, Data->WarmupTime);

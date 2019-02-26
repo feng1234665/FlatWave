@@ -17,9 +17,6 @@ public:
 	class AFWProjectile* FireProjectile() override;
 
 	void TriggerPressed() override;
-	void TriggerReleased() override;
-	void AltTriggerPressed() override;
-	void AltTriggerReleased() override;
 
 	bool CanStartWarmup();
 	bool CanFire() override;
@@ -29,4 +26,5 @@ protected:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	float WarmupCounter = 0.f;
 	class UParticleSystemComponent* MuzzleParticles;
+	class UParticleSystemComponent* ShellParticles;
 };
