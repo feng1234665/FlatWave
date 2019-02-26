@@ -14,6 +14,8 @@ class FLATWAVE_API AFWPlayerCharacterBase : public AFWCharacter
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FirstPersonCameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* WeaponComponentParent;
 public:
 	AFWPlayerCharacterBase();
 
@@ -67,5 +69,10 @@ public:
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const
 	{
 		return FirstPersonCameraComponent;
+	}
+
+	FORCEINLINE class USceneComponent* GetWeaponComponentParent() const
+	{
+		return WeaponComponentParent;
 	}
 };
