@@ -20,6 +20,7 @@ void AFWPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("SwitchToFirstWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToFirstWeapon);
 	InputComponent->BindAction("SwitchToSecondWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToSecondWeapon);
+	InputComponent->BindAction("SwitchToThirdWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToThirdWeapon);
 
 	InputComponent->BindAxis("MoveForward", this, &AFWPlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AFWPlayerController::MoveRight);
@@ -55,13 +56,19 @@ void AFWPlayerController::OnAltTriggerReleased()
 void AFWPlayerController::SwitchToFirstWeapon()
 {
 	if (GetPawn())
-		GetPlayerPawn()->SwitchToFirstWeapon();
+		GetPlayerPawn()->EquipWeapon(0);
 }
 
 void AFWPlayerController::SwitchToSecondWeapon()
 {
 	if (GetPawn())
-		GetPlayerPawn()->SwitchToSecondWeapon();
+		GetPlayerPawn()->EquipWeapon(1);
+}
+
+void AFWPlayerController::SwitchToThirdWeapon()
+{
+	if (GetPawn())
+		GetPlayerPawn()->EquipWeapon(2);
 }
 
 void AFWPlayerController::MoveForward(float Value)

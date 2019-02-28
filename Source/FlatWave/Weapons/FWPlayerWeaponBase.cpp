@@ -78,7 +78,12 @@ void UFWPlayerWeaponBase::AltTriggerReleased()
 
 bool UFWPlayerWeaponBase::CanFire()
 {
-	return CurrentAmmo > 0 && FireRateCounter <= 0.f && bTriggerPressed;
+	return CurrentAmmo >= WeaponData->AmmoCostPerShot && FireRateCounter <= 0.f && bTriggerPressed;
+}
+
+float UFWPlayerWeaponBase::GetSpread()
+{
+	return WeaponData->MaxSpread;
 }
 
 AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
@@ -92,11 +97,12 @@ AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
 	{
 		FVector Location = GetProjectileSpawnLocation();
 		FRotator Rotation = GetOwnerCharacter()->GetProjectileSpawnRotation();
-		if (WeaponData->MaxSpread > 0.f)
+		float Spread = GetSpread();
+		if (Spread > 0.f)
 		{
 			FVector RotationVector = Rotation.Vector();
-			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-WeaponData->MaxSpread, WeaponData->MaxSpread), FVector::UpVector);
-			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-WeaponData->MaxSpread, WeaponData->MaxSpread), FVector::RightVector);
+			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-Spread, Spread), FVector::UpVector);
+			RotationVector = RotationVector.RotateAngleAxis(FMath::RandRange(-Spread, Spread), FVector::RightVector);
 			Rotation = RotationVector.Rotation();
 		}
 		FActorSpawnParameters SpawnParams;

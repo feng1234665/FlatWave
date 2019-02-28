@@ -35,8 +35,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		TArray<class UFWWeaponData*> Weapons;
 	TMap<EWeaponType, class UFWPlayerWeaponBase*> WeaponComponents;
+public:
 	void EquipWeapon(int32 Index);
-
+	TMap<EWeaponType, class UFWPlayerWeaponBase*> GetWeapons() const;
+protected:
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = Audio)
@@ -54,9 +56,6 @@ public:
 
 	void OnAltTriggerPressed();
 	void OnAltTriggerReleased();
-
-	void SwitchToFirstWeapon();
-	void SwitchToSecondWeapon();
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);

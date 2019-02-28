@@ -87,7 +87,7 @@ void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (ProjectileData->OnDestroyParticleSystem)
 				UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileData->OnDestroyParticleSystem, GetActorLocation(), FRotator::ZeroRotator, true);
 			if (ProjectileData->OnDestroySound)
-				UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->OnDestroySound, GetActorLocation(), 1.f, 1.f, 0.f, ProjectileData->SoundAttenuation);
+				UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->OnDestroySound, GetActorLocation());
 			Destroy();
 		}
 	}

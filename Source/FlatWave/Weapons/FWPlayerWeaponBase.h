@@ -27,6 +27,7 @@ public:
 	virtual void AltTriggerReleased();
 
 	virtual bool CanFire();
+	virtual float GetSpread();
 
 	virtual class AFWProjectile* FireProjectile();
 

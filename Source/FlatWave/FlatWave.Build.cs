@@ -29,6 +29,7 @@ public class FlatWave : ModuleRules
             "FlatWave/Weapons/Projectiles",
             "FlatWave/Weapons/Minigun",
             "FlatWave/Weapons/RocketLauncher",
+            "FlatWave/Weapons/LaserRifle",
             "FlatWave/Util",
             "FlatWave/Spawner",
             "FlatWave/GameMode",

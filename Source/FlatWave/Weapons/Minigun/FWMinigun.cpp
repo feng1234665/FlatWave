@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "FlatWave.h"
+#include "Camera/CameraComponent.h"
 
 void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
 {
@@ -53,8 +54,8 @@ AFWProjectile* UFWMinigun::FireProjectile()
 	MuzzleParticles->ActivateSystem();
 	ShellParticles->ActivateSystem();
 	TArray<FHitResult> Hits;
-	FVector Start = GetProjectileSpawnLocation();
-	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * WeaponData->ProjectileData->MaxRange;
+	FVector Start = GetOwnerCharacter()->GetWeaponComponentParent()->GetComponentLocation();
+	FVector End = Start + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * WeaponData->ProjectileData->MaxRange;
 	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, COLLISION_PROJECTILE);
 	if (HasHit)
 	{
