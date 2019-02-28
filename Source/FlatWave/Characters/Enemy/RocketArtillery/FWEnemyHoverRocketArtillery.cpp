@@ -8,6 +8,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
+//PRAGMA_DISABLE_OPTIMIZATION
+
 void AFWEnemyHoverRocketArtillery::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 {
 	if (ProjectileData)
@@ -36,9 +38,10 @@ bool AFWEnemyHoverRocketArtillery::IsPointingAt(AActor* Target, float Tolerance 
 	float CurrentPitch = BarrelComponent->GetComponentRotation().Pitch;
 	bool IsAproxPointing = FMath::IsNearlyEqual(CurrentPitch, BarrelMinPitch, 0.5f);
 	float CurrentYaw = BarrelComponent->GetComponentRotation().Yaw;
-	FVector DirectionTowardsTarget = GetActorLocation() - Target->GetActorLocation();
+	FVector DirectionTowardsTarget = Target->GetActorLocation() - GetActorLocation();
 	DirectionTowardsTarget.Normalize();
-	bool IsYawCorrect = FMath::IsNearlyEqual(CurrentYaw, DirectionTowardsTarget.Rotation().Yaw, 0.1f);;
+	float TargetYaw = DirectionTowardsTarget.Rotation().Yaw;
+	bool IsYawCorrect = FMath::IsNearlyEqual(CurrentYaw, TargetYaw, 0.1f);
 	return IsAproxPointing && IsYawCorrect;
 }
 
@@ -89,6 +92,10 @@ void AFWEnemyHoverRocketArtillery::FireRocket(AActor* Target)
 		{
 			SpawnedProjectile->Init(ProjectileData, FVector(Velocity.Size(), 0.f, 0.f));
 			SpawnedProjectile->GetProjectileMovement()->HomingTargetComponent = Target->GetRootComponent();
+			if (FireSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+			}
 		}
 	}
 	else

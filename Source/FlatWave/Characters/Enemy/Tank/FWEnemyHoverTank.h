@@ -43,6 +43,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Audio)
+		class USoundBase* FireSound;
 	virtual void ShootProjectile(AActor* TargetActor = nullptr);
 	virtual bool IsDoneFiring();
 protected:

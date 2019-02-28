@@ -80,7 +80,13 @@ void AFWEnemyHoverTank::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 		Params.Instigator = this;
 		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
 		if (SpawnedProjectile)
+		{
 			SpawnedProjectile->Init(ProjectileData);
+			if (FireSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+			}
+		}
 	}
 }
 
