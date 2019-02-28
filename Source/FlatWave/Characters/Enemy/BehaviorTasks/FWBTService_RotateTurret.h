@@ -17,4 +17,8 @@ public:
 	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	UPROPERTY(EditAnywhere)
 		FVector TargetOffset;
+	UPROPERTY(EditAnywhere)
+		bool bPredictTarget = true;
+	UPROPERTY(EditAnywhere)
+		float PredictScale = 1.f;
 };
