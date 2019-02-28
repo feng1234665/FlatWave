@@ -7,22 +7,23 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "FWHealthComponent.h"
 #include "FWPlayerWeaponBase.h"
+#include "TimerManager.h"
 
 AFWItemSpawner::AFWItemSpawner()
 {
 	Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
 	RootComponent = Root;
 
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>("CollisionComponent");
-	CollisionComponent->SetupAttachment(RootComponent);
-	ParticleComponent = CreateDefaultSubobject<UParticleSystemComponent>("ParticleComponent");
-	ParticleComponent->SetupAttachment(RootComponent);
-	ParticleComponent->bAutoActivate = true;
+	PickupCollision = CreateDefaultSubobject<USphereComponent>("CollisionComponent");
+	PickupCollision->SetupAttachment(RootComponent);
 
-	VisualDebugMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("DebugMesh");
-	VisualDebugMeshComponent->SetupAttachment(RootComponent);
-	VisualDebugMeshComponent->bHiddenInGame = true;
-	VisualDebugMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>("BaseMesh");
+	BaseMesh->SetupAttachment(RootComponent);
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	BoxMesh = CreateDefaultSubobject<UStaticMeshComponent>("BoxMesh");
+	BoxMesh->SetupAttachment(BaseMesh);
+	BoxMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AFWItemSpawner::BeginPlay()
@@ -30,7 +31,6 @@ void AFWItemSpawner::BeginPlay()
 	Super::BeginPlay();
 	if (PickupData)
 	{
-		ParticleComponent->SetTemplate(PickupData->ParticleSystem);
 		if (bSpawnOnBeginPlay)
 		{
 			ActivateItem();
@@ -42,16 +42,23 @@ void AFWItemSpawner::BeginPlay()
 	}
 }
 
+void AFWItemSpawner::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	FRotator NewRotation = FRotator(0.f, 30.f * DeltaTime, 0.f);
+	BoxMesh->AddRelativeRotation(NewRotation);
+}
+
 void AFWItemSpawner::ActivateItem()
 {
-	ParticleComponent->ActivateSystem();
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	BoxMesh->SetVisibility(true);
+	PickupCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AFWItemSpawner::DeactivateItem()
 {
-	ParticleComponent->DeactivateSystem();
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BoxMesh->SetVisibility(false);
+	PickupCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &AFWItemSpawner::ActivateItem, SpawnInterval, false);
 }
 
@@ -62,14 +69,15 @@ bool AFWItemSpawner::CanActivateItem(class AFWPlayerCharacterBase* Player)
 	case EPickupType::HEALTH:
 		return Player->GetHealthComponent()->GetHealthPercent() < 1.f;
 	case EPickupType::AMMO_ALL:
-		// TODO
-		return true;
-	case EPickupType::AMMO_BULLET:
-		// TODO
-		return true;
-	case EPickupType::AMMO_ROCKET:
-		// TODO
-		return true;
+		for (TPair<EWeaponType, UFWPlayerWeaponBase*> Weapon : Player->GetWeapons())
+		{
+			UFWPlayerWeaponBase* PlayerWeapon = Weapon.Value;
+			if (PlayerWeapon->GetCurrentAmmo() < PlayerWeapon->GetMaxAmmo())
+			{
+				return true;
+			}
+		}
+		return false;
 	default:
 		return true;
 	}
@@ -83,15 +91,10 @@ void AFWItemSpawner::ApplyItem(class AFWPlayerCharacterBase* Player)
 		Player->GetHealthComponent()->ChangeHealth(PickupData->Amount);
 		break;
 	case EPickupType::AMMO_ALL:
-		// TODO
-		// DEBUG
-		Player->GetCurrentWeapon()->ChangeAmmo(PickupData->Amount);
-		break;
-	case EPickupType::AMMO_BULLET:
-		// TODO
-		break;
-	case EPickupType::AMMO_ROCKET:
-		// TODO
+		for (TPair<EWeaponType, UFWPlayerWeaponBase*> Weapon : Player->GetWeapons())
+		{
+			Weapon.Value->ChangeAmmo(PickupData->Amount);
+		}
 		break;
 	default:
 		break;

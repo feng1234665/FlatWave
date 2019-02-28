@@ -10,9 +10,7 @@ UENUM()
 enum class EPickupType : uint8
 {
 	HEALTH,
-	AMMO_ALL,
-	AMMO_BULLET,
-	AMMO_ROCKET
+	AMMO_ALL
 };
 
 
@@ -25,6 +23,4 @@ public:
 		EPickupType Type;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		float Amount = 100.f;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		class UParticleSystem* ParticleSystem;
 };
