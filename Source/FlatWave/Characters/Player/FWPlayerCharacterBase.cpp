@@ -73,6 +73,11 @@ void AFWPlayerCharacterBase::EquipWeapon(int32 Index)
 	CurrentWeapon->SetVisibility(true);
 }
 
+TMap<EWeaponType, class UFWPlayerWeaponBase*> AFWPlayerCharacterBase::GetWeapons() const
+{
+	return WeaponComponents;
+}
+
 float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	if (!Cast<AFWPlayerController>(EventInstigator))
@@ -119,16 +124,6 @@ void AFWPlayerCharacterBase::OnAltTriggerReleased()
 {
 	if (CurrentWeapon)
 		CurrentWeapon->AltTriggerReleased();
-}
-
-void AFWPlayerCharacterBase::SwitchToFirstWeapon()
-{
-	EquipWeapon(0);
-}
-
-void AFWPlayerCharacterBase::SwitchToSecondWeapon()
-{
-	EquipWeapon(1);
 }
 
 void AFWPlayerCharacterBase::MoveForward(float Value)

@@ -10,7 +10,8 @@ UENUM()
 enum class EWeaponType : uint8
 {
 	MINIGUN,
-	ROCKETLAUNCHER
+	ROCKETLAUNCHER,
+	LASERSHOTGUN
 };
 
 UCLASS()

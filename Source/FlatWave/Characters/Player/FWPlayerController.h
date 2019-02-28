@@ -23,6 +23,7 @@ private:
 
 	void SwitchToFirstWeapon();
 	void SwitchToSecondWeapon();
+	void SwitchToThirdWeapon();
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
