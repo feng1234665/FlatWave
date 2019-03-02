@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GameFramework/DamageType.h"
+#include "Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 #include "FWUtilities.generated.h"
 
 UCLASS()
@@ -24,6 +26,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 		static void ApplyDamage(class AActor* DamagedActor, float Damage, class AController* InstigatorController, class AActor* DamageCauseer, TSubclassOf<class UDamageType> DamageType);
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
+		static void ApplyRadialImpulse(UObject* WorldContextObject, FVector ImpulseOrigin, float ImpulseRadius, float ImpulseStrength);
 
 	template<typename T>
 	static FORCEINLINE void ShuffleArray(TArray<T>& Array);

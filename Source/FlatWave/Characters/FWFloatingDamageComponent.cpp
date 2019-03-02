@@ -33,7 +33,10 @@ void UFWFloatingDamageComponent::TickComponent(float DeltaTime, enum ELevelTick 
 void UFWFloatingDamageComponent::SetDamageValue(float NewDamageValue)
 {
 	UFWUserWidget* UserWidget = Cast<UFWUserWidget>(GetUserWidgetObject());
-	UserWidget->SetFloatValue(NewDamageValue);
-	float RandomX = FMath::RandRange(-100.f, 100.f);
-	SetRelativeLocation(FVector(RandomX, 0.f, 0.f));
+	if (UserWidget)
+	{
+		UserWidget->SetFloatValue(NewDamageValue);
+		float RandomX = FMath::RandRange(-100.f, 100.f);
+		SetRelativeLocation(FVector(RandomX, 0.f, 0.f));
+	}
 }

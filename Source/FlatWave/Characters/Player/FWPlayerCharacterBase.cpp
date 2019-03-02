@@ -44,6 +44,7 @@ void AFWPlayerCharacterBase::BeginPlay()
 		WeaponComponent->AttachToComponent(WeaponComponentParent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 		WeaponComponent->RegisterComponent();
 		WeaponComponent->SetVisibility(false);
+		WeaponComponent->CastShadow = false;
 		WeaponComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponComponent->Init(Weapon, WeaponOffset);
 		WeaponComponents.Add(Weapon->Type, WeaponComponent);
@@ -82,6 +83,7 @@ float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent
 {
 	if (!Cast<AFWPlayerController>(EventInstigator))
 	{
+		OnDamageTaken.Broadcast();
 		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
 	return 0.f;

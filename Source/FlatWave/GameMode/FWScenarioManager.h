@@ -4,23 +4,58 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "FWEnemySpawner.h"
 #include "FWScenarioManager.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStageAction, int32, StageIndex);
+
+USTRUCT()
+struct FSpawnerList
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		TArray<class AFWEnemySpawner*> Spawners;
+	UPROPERTY(EditAnywhere)
+		class UFWGameScenario* Scenario;
+
+	TArray<class AFWEnemySpawner*> GetSpawnerForEnemyClass(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass)
+	{
+		return Spawners.FilterByPredicate([EnemyClass](AFWEnemySpawner* Spawner)
+		{
+			return Spawner->IsSpawningClass(EnemyClass);
+		});
+	}
+};
 
 UCLASS()
 class FLATWAVE_API AFWScenarioManager : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+public:
 	AFWScenarioManager();
-
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+		void ActivateNextStage();
+	FOnStageAction OnStageStart;
+	FOnStageAction OnStageEnd;
+private:
+	UPROPERTY(EditAnywhere)
+		TArray<FSpawnerList> StageSpawners;
+	bool bNotStarted = true;
+	int32 CurrentStage = 0;
+	int32 CurrentWave = 0;
+
+	void ProcessStage(int32 Index);
+	bool IsStageFinished(int32 Index);
+	bool bStageWasFinished = false;
+
+	void ProcessWave(int32 Index);
+	bool IsWaveFinished(int32 Index);
+
+	void SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount);
 };
