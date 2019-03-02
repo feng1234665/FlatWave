@@ -7,8 +7,7 @@
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-
-//PRAGMA_DISABLE_OPTIMIZATION
+#include "FWHealthComponent.h"
 
 void AFWEnemyHoverRocketArtillery::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 {
@@ -55,6 +54,10 @@ void AFWEnemyHoverRocketArtillery::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bFiringRockets)
 	{
+		if (GetHealthComponent()->GetHealth() <= 0.f)
+		{
+			RocketsLeftTofire = 0;
+		}
 		RocketFireCounter -= DeltaTime;
 		if (RocketsLeftTofire <= 0)
 		{

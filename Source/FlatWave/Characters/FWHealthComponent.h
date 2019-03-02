@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "FWDelegates.h"
 #include "FWHealthComponent.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAction);
 
 UCLASS(ClassGroup = (Custom))
 class FLATWAVE_API UFWHealthComponent : public UActorComponent

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Characters/FWCharacter.h"
 #include "FWWeaponData.h"
+#include "FWDelegates.h"
 #include "FWPlayerCharacterBase.generated.h"
 
 UCLASS()
@@ -40,6 +41,8 @@ public:
 	TMap<EWeaponType, class UFWPlayerWeaponBase*> GetWeapons() const;
 protected:
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	UPROPERTY(BlueprintAssignable)
+		FOnAction OnDamageTaken;
 
 	UPROPERTY(EditDefaultsOnly, Category = Audio)
 		class USoundBase* JumpSound;

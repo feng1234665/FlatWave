@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "FWDelegates.h"
 #include "FWMainGameMode.generated.h"
 
 UENUM()
@@ -33,19 +34,15 @@ public:
 	bool IsGamePaused();
 	bool IsGameWon();
 	bool IsGameLost();
-private:
-	class AFWPlayerController* PlayerControllerCache;
-	class UFWGameScenario* CurrentGameScenario;
-	UPROPERTY(EditDefaultsOnly)
-		TArray<class UFWGameScenario*> GameScenarios;
-	void ChooseRandomGameScenario();
-	int32 CurrentWave = 0;
-	int32 LastWave;
-	bool IsWaveFinished(int32 Index);
-	void ProcessWave(int32 Index);
 
-	TArray<class AFWEnemySpawner*> EnemySpawners;
-	void GatherEnemySpawners();
-	TArray<class AFWEnemySpawner*> CurrentScenarioSpawners;
-	void SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount);
+	void SetGameWon();
+	void SetGameLost();
+
+	FOnAction OnGameStart;
+	UFUNCTION(BlueprintCallable)
+		class AFWScenarioManager* GetScenarioManager() const;
+private:
+	UPROPERTY()
+		class AFWScenarioManager* ScenarioManager;
+	bool bEnteredGame = false;
 };

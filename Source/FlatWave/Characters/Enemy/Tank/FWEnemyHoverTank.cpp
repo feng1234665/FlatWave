@@ -8,6 +8,7 @@
 #include "FWProjectile.h"
 #include "FWProjectileData.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "FWUtilities.h"
 
 AFWEnemyHoverTank::AFWEnemyHoverTank()
 {
@@ -99,6 +100,8 @@ void AFWEnemyHoverTank::OnDeath()
 {
 	Super::OnDeath();
 	ChassisComponent->SetSimulatePhysics(true);
+	ChassisComponent->SetCollisionObjectType(ECC_PhysicsBody);
 	ChassisComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	UFWUtilities::ApplyRadialImpulse(this, GetActorLocation(), 200.f, 1000000.f);
 }

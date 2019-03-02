@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Spawner/FWSpawner.h"
+#include "FWEnemyCharacterBase.h"
 #include "FWEnemySpawner.generated.h"
 
-/**
- *
- */
 UCLASS()
 class FLATWAVE_API AFWEnemySpawner : public AFWSpawner
 {

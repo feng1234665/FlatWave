@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FWMainGameMode.h"
+#include "FWScenarioManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "FWGameScenario.h"
-#include "FWEnemySpawner.h"
-#include "FWUtilities.h"
 
 AFWMainGameMode::AFWMainGameMode()
 {
@@ -14,9 +12,16 @@ AFWMainGameMode::AFWMainGameMode()
 void AFWMainGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	ChooseRandomGameScenario();
-	GatherEnemySpawners();
-	ProcessWave(0);
+	TArray<AActor*> ScenarioManagers;
+	UGameplayStatics::GetAllActorsOfClass(this, AFWScenarioManager::StaticClass(), ScenarioManagers);
+	if (ScenarioManagers.Num() > 0)
+	{
+		ScenarioManager = Cast<AFWScenarioManager>(ScenarioManagers[0]);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO SCENARIO MANAGER PRESENT!"));
+	}
 }
 
 void AFWMainGameMode::Tick(float DeltaSeconds)
@@ -30,18 +35,10 @@ void AFWMainGameMode::Tick(float DeltaSeconds)
 
 void AFWMainGameMode::UpdateRunning(float DeltaSeconds)
 {
-	if (IsWaveFinished(CurrentWave))
+	if (!bEnteredGame)
 	{
-		if (CurrentWave < LastWave)
-		{
-			++CurrentWave;
-			ProcessWave(CurrentWave);
-		}
-		else
-		{
-			CurrentState = EGameState::GameOver_Win;
-			UE_LOG(LogTemp, Warning, TEXT("GameWon"));
-		}
+		OnGameStart.Broadcast();
+		bEnteredGame = true;
 	}
 }
 
@@ -72,87 +69,19 @@ bool AFWMainGameMode::IsGameLost()
 	return CurrentState == EGameState::GameOver_Lose;
 }
 
-void AFWMainGameMode::ChooseRandomGameScenario()
+void AFWMainGameMode::SetGameWon()
 {
-	if (GameScenarios.Num() > 0)
-	{
-		CurrentGameScenario = GameScenarios[FMath::RandRange(0, GameScenarios.Num() - 1)];
-		CurrentWave = 0;
-		LastWave = CurrentGameScenario->Waves.Num() - 1;
-	}
+	CurrentState = EGameState::GameOver_Win;
+	UE_LOG(LogTemp, Warning, TEXT("Game Won!"));
 }
 
-bool AFWMainGameMode::IsWaveFinished(int32 Index)
+void AFWMainGameMode::SetGameLost()
 {
-	for (AFWEnemySpawner* Spawner : CurrentScenarioSpawners)
-	{
-		if (!(Spawner->IsDoneSpawning() && Spawner->AllEnemiesKilled()))
-			return false;
-	}
-	return true;
+	CurrentState = EGameState::GameOver_Lose;
+	UE_LOG(LogTemp, Warning, TEXT("Game Lost!"));
 }
 
-void AFWMainGameMode::ProcessWave(int32 Index)
+class AFWScenarioManager* AFWMainGameMode::GetScenarioManager() const
 {
-	CurrentScenarioSpawners.Reset(8);
-	FGameWave Wave = CurrentGameScenario->Waves[Index];
-	for (const TPair<TSubclassOf<AFWEnemyCharacterBase>, int32> Enemy : Wave.Enemies)
-	{
-		TSubclassOf<AFWEnemyCharacterBase> EnemyClass = Enemy.Key;
-		int32 Amount = Enemy.Value;
-		SetupEnemySpawners(EnemyClass, Amount);
-	}
-}
-
-void AFWMainGameMode::GatherEnemySpawners()
-{
-	TArray<AActor*> EnemySpawnerActors;
-	UGameplayStatics::GetAllActorsOfClass(this, AFWEnemySpawner::StaticClass(), EnemySpawnerActors);
-	for (AActor* Actor : EnemySpawnerActors)
-	{
-		AFWEnemySpawner* EnemySpawner = Cast<AFWEnemySpawner>(Actor);
-		if (EnemySpawner)
-			EnemySpawners.Add(EnemySpawner);
-	}
-}
-
-void AFWMainGameMode::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount)
-{
-	if (Amount == 0 || !EnemyClass)
-	{
-		return;
-	}
-	TArray<AFWEnemySpawner*> FittingSpawners = EnemySpawners.FilterByPredicate([EnemyClass](AFWEnemySpawner* Spawner)
-	{
-		return Spawner->IsSpawningClass(EnemyClass);
-	});
-	if (FittingSpawners.Num() == 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No fitting spawners for class %s found!"), *EnemyClass->GetName());
-		return;
-	}
-	int32 AmountPerSpawner = Amount / FittingSpawners.Num();
-	int32 SpawnsLeft = Amount;
-	UFWUtilities::ShuffleArray<AFWEnemySpawner*>(FittingSpawners);
-	for (int32 Index = 0; Index < FittingSpawners.Num(); Index++)
-	{
-		AFWEnemySpawner* Spawner = FittingSpawners[Index];
-		int32 ActualAmount = AmountPerSpawner;
-		if (AmountPerSpawner == 0)
-		{
-			ActualAmount = 1;
-		}
-		else if (Index == FittingSpawners.Num() - 1)
-		{
-			// Fill last spawner
-			ActualAmount = SpawnsLeft;
-		}
-		SpawnsLeft -= ActualAmount;
-		Spawner->SetupSpawner(ActualAmount);
-		CurrentScenarioSpawners.Add(Spawner);
-		if (SpawnsLeft <= 0)
-		{
-			break;
-		}
-	}
+	return ScenarioManager;
 }

@@ -13,8 +13,12 @@ UCLASS()
 class FLATWAVE_API UFWBTDecorator_IsTargetVisible : public UBTDecorator_BlackboardBase
 {
 	GENERATED_BODY()
+public:
+	UFWBTDecorator_IsTargetVisible();
 protected:
 	bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 	UPROPERTY(EditAnywhere)
 		FVector CheckOffset = FVector(0.f, 0.f, 50.f);
+	UPROPERTY(EditAnywhere)
+		float CheckRange = 50000.f;
 };
