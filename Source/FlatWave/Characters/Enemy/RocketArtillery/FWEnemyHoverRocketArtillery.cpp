@@ -93,7 +93,7 @@ void AFWEnemyHoverRocketArtillery::FireRocket(AActor* Target)
 		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Rotation, Params);
 		if (SpawnedProjectile)
 		{
-			SpawnedProjectile->Init(ProjectileData, FVector(Velocity.Size(), 0.f, 0.f));
+			SpawnedProjectile->SetInitialVelocity(Velocity.Size());
 			SpawnedProjectile->GetProjectileMovement()->HomingTargetComponent = Target->GetRootComponent();
 			if (FireSound)
 			{

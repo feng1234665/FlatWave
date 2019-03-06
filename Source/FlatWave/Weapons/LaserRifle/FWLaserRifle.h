@@ -3,19 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapons/FWPlayerWeaponBase.h"
+#include "FWPlayerWeapon.h"
 #include "FWLaserRifle.generated.h"
 
-/**
- *
- */
-UCLASS()
-class FLATWAVE_API UFWLaserRifle : public UFWPlayerWeaponBase
+UCLASS(Blueprintable)
+class FLATWAVE_API AFWLaserRifle : public AFWPlayerWeapon
 {
 	GENERATED_BODY()
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UParticleSystemComponent* BeamParticles;
 public:
-
-	void Init(class UFWWeaponData* WeaponData, FVector Offset);
+	AFWLaserRifle();
 
 	void UnequipWeapon() override;
 
@@ -23,14 +22,15 @@ public:
 
 	bool CanFire() override;
 
-	class AFWProjectile* FireProjectile() override;
+	void FireProjectile() override;
 	void FireBeam();
 
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void ApplyBeamDamage(AActor* Target, float Damage);
+	void ActivateBeamParticles();
+
+	void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY()
-		class UParticleSystemComponent* BeamParticles;
 	float ChargeCounter;
 	int32 ChargedAmmoCounter;
 	float RegenAmmoCounter;

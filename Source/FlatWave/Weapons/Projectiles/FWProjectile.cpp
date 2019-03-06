@@ -29,6 +29,9 @@ AFWProjectile::AFWProjectile()
 void AFWProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	ProjectileMovement->ProjectileGravityScale = ProjectileData->GravityScale;
+	ProjectileMovement->SetVelocityInLocalSpace(FVector(ProjectileData->InitialVelocity, 0.f, 0.f));
+	SetLifeSpan(ProjectileData->Lifetime);
 }
 
 void AFWProjectile::Tick(float DeltaTime)
@@ -36,21 +39,25 @@ void AFWProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AFWProjectile::Init(class UFWProjectileData* NewProctileData)
+void AFWProjectile::DestroyProjectile()
 {
-	if (NewProctileData)
-		Init(NewProctileData, FVector(NewProctileData->InitialVelocity, 0.f, 0.f));
+	if (ProjectileData->OnDestroyParticleSystem)
+		UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileData->OnDestroyParticleSystem, GetActorLocation(), FRotator::ZeroRotator, true);
+	if (ProjectileData->OnDestroySound)
+		UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->OnDestroySound, GetActorLocation());
+	Destroy();
 }
 
-void AFWProjectile::Init(class UFWProjectileData* NewProctileData, FVector CustomInitialVelocity)
+float AFWProjectile::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	if (NewProctileData)
-	{
-		ProjectileData = NewProctileData;
-		ProjectileMovement->ProjectileGravityScale = ProjectileData->GravityScale;
-		ProjectileMovement->SetVelocityInLocalSpace(CustomInitialVelocity);
-		SetLifeSpan(ProjectileData->Lifetime);
-	}
+	if (ProjectileData && ProjectileData->bCanBeHitByProjectiles)
+		DestroyProjectile();
+	return DamageAmount;
+}
+
+void AFWProjectile::SetInitialVelocity(float Velocity)
+{
+	ProjectileMovement->SetVelocityInLocalSpace(FVector(Velocity, 0.f, 0.f));
 }
 
 class UProjectileMovementComponent* AFWProjectile::GetProjectileMovement() const
@@ -61,11 +68,13 @@ class UProjectileMovementComponent* AFWProjectile::GetProjectileMovement() const
 void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if (ProjectileData && OtherActor != GetInstigator() && !Cast<AFWProjectile>(OtherActor))
+	if (!HasAuthority())
+		return;
+	if (ProjectileData && OtherActor != GetInstigator() && (ProjectileData->bCanBeHitByProjectiles || !Cast<AFWProjectile>(OtherActor)))
 	{
 		if (ProjectileData->ImpactDamage > 0.f)
 		{
-			UE_LOG(LogFWProjectile, Warning, TEXT("Apply Damage: %f to Actor: %s"), ProjectileData->ImpactDamage, *OtherActor->GetHumanReadableName());
+			//UE_LOG(LogFWProjectile, Warning, TEXT("Apply Damage: %f to Actor: %s"), ProjectileData->ImpactDamage, *OtherActor->GetHumanReadableName());
 			UGameplayStatics::ApplyDamage(OtherActor, ProjectileData->ImpactDamage, GetInstigatorController(), this, UFWDamgeTypeBase::StaticClass());
 		}
 		if (ProjectileData->bExplodeOnHit)
@@ -84,11 +93,7 @@ void AFWProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		if (ProjectileData->bDestroyOnHit)
 		{
-			if (ProjectileData->OnDestroyParticleSystem)
-				UGameplayStatics::SpawnEmitterAtLocation(this, ProjectileData->OnDestroyParticleSystem, GetActorLocation(), FRotator::ZeroRotator, true);
-			if (ProjectileData->OnDestroySound)
-				UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->OnDestroySound, GetActorLocation());
-			Destroy();
+			DestroyProjectile();
 		}
 	}
 }

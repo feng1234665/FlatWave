@@ -35,19 +35,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		int32 AmmoCostPerShot = 1;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		TSubclassOf<class UFWPlayerWeaponBase> WeaponClass;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		class UParticleSystem* MuzzleParticles;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		FName MuzzleSocketName;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		FVector MuzzleOffset;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		class UStaticMesh* Mesh;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Audio)
 		class USoundBase* FireSound;

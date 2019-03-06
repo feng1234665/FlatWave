@@ -26,13 +26,18 @@ float AFWEnemyCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent 
 		float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 		if (FMath::Abs(ActualDamage) > 0.f)
 		{
-			UFWFloatingDamageComponent* FloatingDamage = NewObject<UFWFloatingDamageComponent>(this, FloatingDamageClass);
-			FloatingDamage->RegisterComponent();
-			FloatingDamage->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-			FloatingDamage->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
-			FloatingDamage->SetDamageValue(FMath::Abs(ActualDamage));
+			SpawnDamageWidget(ActualDamage);
 		}
 		return ActualDamage;
 	}
 	return 0.f;
+}
+
+void AFWEnemyCharacterBase::SpawnDamageWidget(float Damage)
+{
+	UFWFloatingDamageComponent* FloatingDamage = NewObject<UFWFloatingDamageComponent>(this, FloatingDamageClass);
+	FloatingDamage->RegisterComponent();
+	FloatingDamage->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+	FloatingDamage->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+	FloatingDamage->SetDamageValue(FMath::Abs(Damage));
 }

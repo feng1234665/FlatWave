@@ -23,12 +23,15 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-public:
-	void Init(class UFWProjectileData* NewProctileData);
-	void Init(class UFWProjectileData* NewProctileData, FVector CustomInitialVelocity);
 
+		void DestroyProjectile();
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+public:
 	UPROPERTY(EditDefaultsOnly)
 		class UFWProjectileData* ProjectileData;
+
+	void SetInitialVelocity(float Velocity);
 
 	class UProjectileMovementComponent* GetProjectileMovement() const;
 

@@ -23,6 +23,4 @@ public:
 		int32 FullChargeAmmoCost = 40;
 	UPROPERTY(EditDefaultsOnly)
 		float AmmoRechargeRate = 5.f;
-	UPROPERTY(EditDefaultsOnly)
-		class UParticleSystem* BeamParticles;
 };

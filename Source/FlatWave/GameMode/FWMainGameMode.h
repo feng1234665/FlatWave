@@ -32,6 +32,9 @@ public:
 
 	void SetGamePaused(bool IsPaused);
 	bool IsGamePaused();
+	UFUNCTION(BlueprintCallable)
+		void TogglePause();
+
 	bool IsGameWon();
 	bool IsGameLost();
 
@@ -42,6 +45,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class AFWScenarioManager* GetScenarioManager() const;
 private:
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UUserWidget> PauseWidgetClass;
+	UPROPERTY()
+		class UUserWidget* PauseWidget;
 	UPROPERTY()
 		class AFWScenarioManager* ScenarioManager;
 	bool bEnteredGame = false;

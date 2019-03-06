@@ -3,6 +3,15 @@
 #include "FWPlayerController.h"
 #include "FWPlayerCharacterBase.h"
 #include "FWUtilities.h"
+#include "FWProjectile.h"
+#include "FWProjectileData.h"
+#include "FWWeaponData.h"
+#include "FWMainGameMode.h"
+
+AFWPlayerController::AFWPlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
 
 void AFWPlayerController::SetupInputComponent()
 {
@@ -22,11 +31,28 @@ void AFWPlayerController::SetupInputComponent()
 	InputComponent->BindAction("SwitchToSecondWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToSecondWeapon);
 	InputComponent->BindAction("SwitchToThirdWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToThirdWeapon);
 
+	InputComponent->BindAction("PauseGame", IE_Pressed, this, &AFWPlayerController::PausePressed).bExecuteWhenPaused = true;
+
 	InputComponent->BindAxis("MoveForward", this, &AFWPlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AFWPlayerController::MoveRight);
 
-	InputComponent->BindAxis("Turn", this, &APlayerController::AddYawInput);
-	InputComponent->BindAxis("LookUp", this, &APlayerController::AddPitchInput);
+	InputComponent->BindAxis("Turn", this, &AFWPlayerController::TurnYaw);
+	InputComponent->BindAxis("LookUp", this, &AFWPlayerController::TurnPitch);
+}
+
+void AFWPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+void AFWPlayerController::Enable()
+{
+	EnableInput(this);
+}
+
+void AFWPlayerController::Disable()
+{
+	DisableInput(this);
 }
 
 void AFWPlayerController::OnTriggerPressed()
@@ -83,6 +109,16 @@ void AFWPlayerController::MoveRight(float Value)
 		GetPlayerPawn()->MoveRight(Value);
 }
 
+void AFWPlayerController::TurnYaw(float Value)
+{
+	AddYawInput(Value);
+}
+
+void AFWPlayerController::TurnPitch(float Value)
+{
+	AddPitchInput(Value);
+}
+
 void AFWPlayerController::Jump()
 {
 	if (GetPawn())
@@ -99,6 +135,11 @@ void AFWPlayerController::DodgePressed()
 {
 	if (GetPawn())
 		GetPlayerPawn()->DodgePressed();
+}
+
+void AFWPlayerController::PausePressed()
+{
+	UFWUtilities::GetFWMainGameMode(this)->TogglePause();
 }
 
 class AFWPlayerCharacterBase* AFWPlayerController::GetPlayerPawn() const

@@ -6,6 +6,7 @@
 #include "FWPlayerCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/PrimitiveComponent.h"
+#include "Sound/SoundClass.h"
 
 class AFWMainGameMode* UFWUtilities::GetFWMainGameMode(UObject* WorldContextObject)
 {
@@ -61,5 +62,13 @@ void UFWUtilities::ApplyRadialImpulse(UObject* WorldContextObject, FVector Impul
 		{
 			PrimitiveComponent->AddRadialForce(ImpulseOrigin, ImpulseRadius, ImpulseStrength, ERadialImpulseFalloff::RIF_Linear);
 		}
+	}
+}
+
+void UFWUtilities::ChangeVolume(class USoundClass* SoundClass, float NewVolume)
+{
+	if (SoundClass)
+	{
+		SoundClass->Properties.Volume = FMath::Clamp(NewVolume, 0.f, 1.f);
 	}
 }

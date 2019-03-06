@@ -32,6 +32,8 @@ public:
 		bool bSpawnOnBeginPlay = true;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		UFWPickupItemData* PickupData;
+	UPROPERTY(EditDefaultsOnly)
+		class USoundBase* PickupSound;
 
 private:
 	FTimerHandle RespawnTimerHandle;
