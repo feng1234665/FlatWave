@@ -6,8 +6,6 @@
 #include "FWEnemyCharacterBase.h"
 #include "FWMainGameMode.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
-
 AFWScenarioManager::AFWScenarioManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -70,7 +68,8 @@ void AFWScenarioManager::ProcessStage(int32 Index)
 	CurrentStage = Index;
 	UE_LOG(LogTemp, Warning, TEXT("Process Stage: %d"), CurrentStage);
 	OnStageStart.Broadcast(CurrentStage);
-	ProcessWave(0);
+	CurrentWave = 0;
+	ProcessWave(CurrentWave);
 }
 
 bool AFWScenarioManager::IsStageFinished(int32 Index)

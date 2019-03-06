@@ -16,12 +16,22 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FirstPersonCameraComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		class USceneComponent* WeaponComponentParent;
+		class UChildActorComponent* LaserRifleChildActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UChildActorComponent* MinigunChildActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UChildActorComponent* RocketLauncherChildActor;
 public:
 	AFWPlayerCharacterBase();
 
 protected:
-	virtual void BeginPlay();
+	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
+	bool bIsDying = false;
+	FRotator PreDeathRotation;
+	float DyingCounter = 0.f;
+	UPROPERTY(EditDefaultsOnly)
+		float TimeToDeath = 1.5f;
 
 	UPROPERTY(EditDefaultsOnly)
 		float DodgeVerticalPart = 0.1f;
@@ -30,15 +40,14 @@ protected:
 	bool bCanDodge = true;
 	void Landed(const FHitResult& Hit);
 
-	UPROPERTY(EditDefaultsOnly)
-		FVector WeaponOffset;
-	class UFWPlayerWeaponBase* CurrentWeapon;
-	UPROPERTY(EditDefaultsOnly)
-		TArray<class UFWWeaponData*> Weapons;
-	TMap<EWeaponType, class UFWPlayerWeaponBase*> WeaponComponents;
+
+	UPROPERTY()
+		class AFWPlayerWeapon* CurrentWeapon;
+	UPROPERTY()
+		TArray<class AFWPlayerWeapon*> WeaponList;
 public:
 	void EquipWeapon(int32 Index);
-	TMap<EWeaponType, class UFWPlayerWeaponBase*> GetWeapons() const;
+	TArray<class AFWPlayerWeapon*> GetWeapons() const;
 protected:
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	UPROPERTY(BlueprintAssignable)
@@ -50,7 +59,7 @@ protected:
 	void OnDeath() override;
 public:
 	UFUNCTION(BlueprintCallable)
-		class UFWPlayerWeaponBase* GetCurrentWeapon() const;
+		class AFWPlayerWeapon* GetCurrentWeapon() const;
 
 	FRotator GetProjectileSpawnRotation();
 
@@ -67,14 +76,10 @@ public:
 	void JumpReleased();
 
 	void DodgePressed();
+
 public:
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const
 	{
 		return FirstPersonCameraComponent;
-	}
-
-	FORCEINLINE class USceneComponent* GetWeaponComponentParent() const
-	{
-		return WeaponComponentParent;
 	}
 };

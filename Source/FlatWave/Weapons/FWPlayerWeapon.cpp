@@ -1,46 +1,61 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "FWPlayerWeaponBase.h"
+#include "FWPlayerWeapon.h"
 #include "FWWeaponData.h"
 #include "FWPlayerCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "FWPlayerController.h"
 #include "FWProjectileData.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
+#include "FWUtilities.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerWeapon, Warning, All);
 
-UFWPlayerWeaponBase::UFWPlayerWeaponBase()
+AFWPlayerWeapon::AFWPlayerWeapon()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PrimaryActorTick.bCanEverTick = true;
+
+	Root = CreateDefaultSubobject<USceneComponent>("Root");
+	RootComponent = Root;
+
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
+	WeaponMesh->SetupAttachment(RootComponent);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>("ProjectileSpawn");
+	ProjectileSpawn->SetupAttachment(WeaponMesh);
 }
 
-void UFWPlayerWeaponBase::BeginPlay()
+void AFWPlayerWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-}
-
-void UFWPlayerWeaponBase::Init(class UFWWeaponData* NewWeaponData, FVector WeaponOffset)
-{
-	WeaponData = NewWeaponData;
-	SetRelativeLocation(WeaponOffset);
+	WeaponMesh->SetVisibility(false);
 	CurrentAmmo = WeaponData->MaxAmmo;
-	SetStaticMesh(WeaponData->Mesh);
 }
 
-void UFWPlayerWeaponBase::EquipWeapon()
+void AFWPlayerWeapon::Tick(float DeltaTime)
 {
-
+	Super::Tick(DeltaTime);
+	if (FireRateCounter > 0.f)
+	{
+		FireRateCounter -= DeltaTime;
+	}
 }
 
-void UFWPlayerWeaponBase::UnequipWeapon()
+void AFWPlayerWeapon::EquipWeapon()
+{
+	WeaponMesh->SetVisibility(true);
+}
+
+void AFWPlayerWeapon::UnequipWeapon()
 {
 	bTriggerPressed = false;
 	bAltTriggerPressed = false;
+	WeaponMesh->SetVisibility(false);
 }
 
-void UFWPlayerWeaponBase::TriggerPressed()
+void AFWPlayerWeapon::TriggerPressed()
 {
 	if (!WeaponData)
 	{
@@ -54,12 +69,12 @@ void UFWPlayerWeaponBase::TriggerPressed()
 		FireProjectile();
 }
 
-void UFWPlayerWeaponBase::TriggerReleased()
+void AFWPlayerWeapon::TriggerReleased()
 {
 	bTriggerPressed = false;
 }
 
-void UFWPlayerWeaponBase::AltTriggerPressed()
+void AFWPlayerWeapon::AltTriggerPressed()
 {
 	if (!WeaponData)
 	{
@@ -70,29 +85,29 @@ void UFWPlayerWeaponBase::AltTriggerPressed()
 	bAltTriggerPressed = true;
 }
 
-void UFWPlayerWeaponBase::AltTriggerReleased()
+void AFWPlayerWeapon::AltTriggerReleased()
 {
 	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerReleased"));
 	bAltTriggerPressed = false;
 }
 
-bool UFWPlayerWeaponBase::CanFire()
+bool AFWPlayerWeapon::CanFire()
 {
 	return CurrentAmmo >= WeaponData->AmmoCostPerShot && FireRateCounter <= 0.f && bTriggerPressed;
 }
 
-float UFWPlayerWeaponBase::GetSpread()
+float AFWPlayerWeapon::GetSpread()
 {
 	return WeaponData->MaxSpread;
 }
 
-AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
+void AFWPlayerWeapon::FireProjectile()
 {
-	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("FireProjectileBase"));
+	//UE_LOG(LogFWPlayerWeapon, Warning, TEXT("FireProjectileBase"));
 	ConsumeAmmo();
 	FireRateCounter = GetFireRatePerSecond();
 	if (WeaponData->FireSound)
-		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetOwner()->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponData->FireSound, GetActorLocation());
 	if (WeaponData->ProjectileData && WeaponData->ProjectileData->ProjectileClass)
 	{
 		FVector Location = GetProjectileSpawnLocation();
@@ -108,73 +123,55 @@ AFWProjectile* UFWPlayerWeaponBase::FireProjectile()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = GetOwnerCharacter();
 		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(WeaponData->ProjectileData->ProjectileClass, Location, Rotation, SpawnParams);
-		if (SpawnedProjectile)
-			SpawnedProjectile->Init(WeaponData->ProjectileData);
-		return SpawnedProjectile;
 	}
-	return nullptr;
 }
 
-void UFWPlayerWeaponBase::ChangeAmmo(int32 Amount)
+void AFWPlayerWeapon::ChangeAmmo(int32 Amount)
 {
 	CurrentAmmo = FMath::Clamp(CurrentAmmo + Amount, 0, GetMaxAmmo());
 }
 
-int32 UFWPlayerWeaponBase::GetCurrentAmmo()
+int32 AFWPlayerWeapon::GetCurrentAmmo()
 {
 	return CurrentAmmo;
 }
 
-int32 UFWPlayerWeaponBase::GetMaxAmmo()
+int32 AFWPlayerWeapon::GetMaxAmmo()
 {
 	return WeaponData->MaxAmmo;
 }
 
-void UFWPlayerWeaponBase::ConsumeAmmo()
+void AFWPlayerWeapon::ConsumeAmmo()
 {
 	CurrentAmmo = FMath::Clamp(CurrentAmmo - WeaponData->AmmoCostPerShot, 0, GetMaxAmmo());
 }
 
-UFWWeaponData* UFWPlayerWeaponBase::GetWeaponData() const
+class UFWWeaponData* AFWPlayerWeapon::GetWeaponData() const
 {
 	return WeaponData;
 }
 
-float UFWPlayerWeaponBase::GetFireRateCounter()
+float AFWPlayerWeapon::GetFireRateCounter()
 {
 	return FireRateCounter;
 }
 
-float UFWPlayerWeaponBase::GetFireRatePerSecond()
+float AFWPlayerWeapon::GetFireRatePerSecond()
 {
 	return 1 / (WeaponData->FireRate / 60.f);
 }
 
-void UFWPlayerWeaponBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+FVector AFWPlayerWeapon::GetProjectileSpawnLocation()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (FireRateCounter > 0.f)
-	{
-		FireRateCounter -= DeltaTime;
-	}
+	return ProjectileSpawn->GetComponentLocation();
 }
 
-FVector UFWPlayerWeaponBase::GetProjectileSpawnLocation()
+class AFWPlayerCharacterBase* AFWPlayerWeapon::GetOwnerCharacter() const
 {
-	FVector TotalOffset = WeaponData->MuzzleOffset;
-
-	FVector ForwardOffset = GetForwardVector() * TotalOffset.X;
-	FVector RightOffset = GetRightVector() * TotalOffset.Y;
-	FVector UpOffset = GetUpVector() * TotalOffset.Z;
-	return GetComponentLocation() + ForwardOffset + RightOffset + UpOffset;
+	return OwnerPlayer;
 }
 
-class AFWPlayerCharacterBase* UFWPlayerWeaponBase::GetOwnerCharacter() const
+class AFWPlayerController* AFWPlayerWeapon::GetOwnerPlayerController() const
 {
-	return Cast<AFWPlayerCharacterBase>(GetOwner());
-}
-
-class AFWPlayerController* UFWPlayerWeaponBase::GetOwnerPlayerController() const
-{
-	return Cast<AFWPlayerController>(GetOwnerCharacter()->GetController());
+	return UFWUtilities::GetFirstFWPlayerController(GetWorld());
 }

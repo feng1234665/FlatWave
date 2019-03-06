@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FWPlayerWeaponBase.h"
+#include "FWPlayerWeapon.h"
 #include "FWRocketLauncher.generated.h"
 
-UCLASS()
-class FLATWAVE_API UFWRocketLauncher : public UFWPlayerWeaponBase
+UCLASS(Blueprintable)
+class FLATWAVE_API AFWRocketLauncher : public AFWPlayerWeapon
 {
 	GENERATED_BODY()
 public:
 
-	void Init(class UFWWeaponData* WeaponData, FVector Offset);
+	void BeginPlay() override;
 	void UnequipWeapon() override;
 
 	void AltTriggerPressed() override;
@@ -20,8 +20,8 @@ public:
 
 	bool CanFire() override;
 
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	class AFWProjectile* FireProjectile() override;
+	void Tick(float DeltaTime) override;
+	void FireProjectile() override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		int32 GetChargeAmount();
@@ -29,7 +29,7 @@ public:
 		float GetChargePercent();
 
 private:
-	FVector InitialRelativeLocation;
+		FVector InitialRelativeLocation;
 	bool bFiringChargedRockets = false;
 	int32 AmountRocketsCharged = 0;
 	float ChargedRocketsFireCounter = 0.f;

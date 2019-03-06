@@ -9,6 +9,7 @@
 #include "FWProjectileData.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "FWUtilities.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 AFWEnemyHoverTank::AFWEnemyHoverTank()
 {
@@ -28,9 +29,58 @@ AFWEnemyHoverTank::AFWEnemyHoverTank()
 	MuzzleLocationComponent->SetupAttachment(BarrelComponent);
 }
 
+void AFWEnemyHoverTank::BeginPlay()
+{
+	Super::BeginPlay();
+	if (ChassisComponent->GetStaticMesh())
+	{
+		for (int32 Index = 0; Index < ChassisComponent->GetNumMaterials(); Index++)
+		{
+			ChassisMaterialInstances.Add(UMaterialInstanceDynamic::Create(ChassisComponent->GetMaterial(Index), this));
+			ChassisComponent->SetMaterial(Index, ChassisMaterialInstances[Index]);
+		}
+	}
+	if (TurretComponent->GetStaticMesh())
+	{
+		for (int32 Index = 0; Index < TurretComponent->GetNumMaterials(); Index++)
+		{
+			TurretMaterialInstances.Add(UMaterialInstanceDynamic::Create(TurretComponent->GetMaterial(Index), this));
+			TurretComponent->SetMaterial(Index, TurretMaterialInstances[Index]);
+		}
+	}
+	if (BarrelComponent->GetStaticMesh())
+	{
+		for (int32 Index = 0; Index < BarrelComponent->GetNumMaterials(); Index++)
+		{
+			BarrelMaterialInstances.Add(UMaterialInstanceDynamic::Create(BarrelComponent->GetMaterial(Index), this));
+			BarrelComponent->SetMaterial(Index, BarrelMaterialInstances[Index]);
+		}
+	}
+}
+
 void AFWEnemyHoverTank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (bIsDying)
+	{
+		DissolveCounter += DeltaTime;
+		if (DissolveCounter > DissolveDelay)
+		{
+			float DissolveAmount = (DissolveCounter - DissolveDelay) / (TimeToDestroy - DissolveDelay);
+			for (UMaterialInstanceDynamic* MaterialInstance : ChassisMaterialInstances)
+			{
+				MaterialInstance->SetScalarParameterValue("DissolveAmount", DissolveAmount);
+			}
+			for (UMaterialInstanceDynamic* MaterialInstance : TurretMaterialInstances)
+			{
+				MaterialInstance->SetScalarParameterValue("DissolveAmount", DissolveAmount);
+			}
+			for (UMaterialInstanceDynamic* MaterialInstance : BarrelMaterialInstances)
+			{
+				MaterialInstance->SetScalarParameterValue("DissolveAmount", DissolveAmount);
+			}
+		}
+	}
 }
 
 void AFWEnemyHoverTank::RotateTurretTowardsTarget(AActor* Target, float DeltaTime, FVector Offset /*= FVector()*/)
@@ -82,7 +132,6 @@ void AFWEnemyHoverTank::ShootProjectile(AActor* TargetActor /*= nullptr*/)
 		AFWProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AFWProjectile>(ProjectileData->ProjectileClass, MuzzleLocation, Direction, Params);
 		if (SpawnedProjectile)
 		{
-			SpawnedProjectile->Init(ProjectileData);
 			if (FireSound)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
@@ -98,10 +147,10 @@ bool AFWEnemyHoverTank::IsDoneFiring()
 
 void AFWEnemyHoverTank::OnDeath()
 {
+	bIsDying = true;
 	Super::OnDeath();
 	ChassisComponent->SetSimulatePhysics(true);
 	ChassisComponent->SetCollisionObjectType(ECC_PhysicsBody);
 	ChassisComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ChassisComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	UFWUtilities::ApplyRadialImpulse(this, GetActorLocation(), 200.f, 1000000.f);
 }

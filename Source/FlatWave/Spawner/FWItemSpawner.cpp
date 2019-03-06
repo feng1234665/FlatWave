@@ -5,9 +5,11 @@
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "FWHealthComponent.h"
-#include "FWPlayerWeaponBase.h"
+#include "FWPlayerWeapon.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 AFWItemSpawner::AFWItemSpawner()
 {
@@ -69,10 +71,9 @@ bool AFWItemSpawner::CanActivateItem(class AFWPlayerCharacterBase* Player)
 	case EPickupType::HEALTH:
 		return Player->GetHealthComponent()->GetHealthPercent() < 1.f;
 	case EPickupType::AMMO_ALL:
-		for (TPair<EWeaponType, UFWPlayerWeaponBase*> Weapon : Player->GetWeapons())
+		for (AFWPlayerWeapon* Weapon : Player->GetWeapons())
 		{
-			UFWPlayerWeaponBase* PlayerWeapon = Weapon.Value;
-			if (PlayerWeapon->GetCurrentAmmo() < PlayerWeapon->GetMaxAmmo())
+			if (Weapon->GetCurrentAmmo() < Weapon->GetMaxAmmo())
 			{
 				return true;
 			}
@@ -91,13 +92,17 @@ void AFWItemSpawner::ApplyItem(class AFWPlayerCharacterBase* Player)
 		Player->GetHealthComponent()->ChangeHealth(PickupData->Amount);
 		break;
 	case EPickupType::AMMO_ALL:
-		for (TPair<EWeaponType, UFWPlayerWeaponBase*> Weapon : Player->GetWeapons())
+		for (AFWPlayerWeapon* Weapon : Player->GetWeapons())
 		{
-			Weapon.Value->ChangeAmmo(PickupData->Amount);
+			Weapon->ChangeAmmo(PickupData->Amount);
 		}
 		break;
 	default:
 		break;
+	}
+	if (PickupSound)
+	{
+		UGameplayStatics::PlaySound2D(this, PickupSound);
 	}
 }
 

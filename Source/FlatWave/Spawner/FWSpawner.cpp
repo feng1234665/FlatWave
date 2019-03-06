@@ -16,7 +16,6 @@ AFWSpawner::AFWSpawner()
 	VisualDebugMeshComponent->bHiddenInGame = true;
 }
 
-// Called when the game starts or when spawned
 void AFWSpawner::BeginPlay()
 {
 	Super::BeginPlay();
@@ -26,7 +25,6 @@ void AFWSpawner::BeginPlay()
 	}
 }
 
-// Called every frame
 void AFWSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

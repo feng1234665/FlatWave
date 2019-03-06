@@ -3,7 +3,7 @@
 #include "FWPlayerCharacterBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SceneComponent.h"
+#include "Components/ChildActorComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "FWRocketLauncher.h"
 #include "FWMinigun.h"
@@ -11,48 +11,64 @@
 #include "FWPlayerController.h"
 #include "FlatWave.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+#include "FWPlayerWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
 AFWPlayerCharacterBase::AFWPlayerCharacterBase()
 {
-	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
-	// Create a CameraComponent	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
+	FirstPersonCameraComponent->RelativeLocation = FVector(-39.56f, 1.75f, 64.f);
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	WeaponComponentParent = CreateDefaultSubobject<USceneComponent>("WeaponComponentParent");
-	WeaponComponentParent->SetupAttachment(FirstPersonCameraComponent);
+	LaserRifleChildActor = CreateDefaultSubobject<UChildActorComponent>("LaserRifle");
+	LaserRifleChildActor->SetupAttachment(FirstPersonCameraComponent);
+
+	MinigunChildActor = CreateDefaultSubobject<UChildActorComponent>("Minigun");
+	MinigunChildActor->SetupAttachment(FirstPersonCameraComponent);
+
+	RocketLauncherChildActor = CreateDefaultSubobject<UChildActorComponent>("RocketLauncher");
+	RocketLauncherChildActor->SetupAttachment(FirstPersonCameraComponent);
 }
 
 void AFWPlayerCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	Weapons.RemoveAll([](UFWWeaponData* Data)
+	AFWPlayerWeapon* LaserRifle = Cast<AFWPlayerWeapon>(LaserRifleChildActor->GetChildActor());
+	if (LaserRifle)
 	{
-		return !Data;
-	});
-
-	for (UFWWeaponData* Weapon : Weapons)
-	{
-		FName ComponentName(*GETENUMSTRING("EWeaponType", Weapon->Type));
-		UFWPlayerWeaponBase* WeaponComponent = NewObject<UFWPlayerWeaponBase>(this, Weapon->WeaponClass, ComponentName);
-		WeaponComponent->AttachToComponent(WeaponComponentParent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-		WeaponComponent->RegisterComponent();
-		WeaponComponent->SetVisibility(false);
-		WeaponComponent->CastShadow = false;
-		WeaponComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponComponent->Init(Weapon, WeaponOffset);
-		WeaponComponents.Add(Weapon->Type, WeaponComponent);
+		LaserRifle->OwnerPlayer = this;
+		WeaponList.Add(LaserRifle);
 	}
-	if (WeaponComponents.Num() > 0)
+	AFWPlayerWeapon* Minigun = Cast<AFWPlayerWeapon>(MinigunChildActor->GetChildActor());
+	if (Minigun)
 	{
-		CurrentWeapon = WeaponComponents[Weapons[0]->Type];
-		CurrentWeapon->SetVisibility(true);
+		Minigun->OwnerPlayer = this;
+		WeaponList.Add(Minigun);
+	}
+	AFWPlayerWeapon* RocketLauncher = Cast<AFWPlayerWeapon>(RocketLauncherChildActor->GetChildActor());
+	if (RocketLauncher)
+	{
+		RocketLauncher->OwnerPlayer = this;
+		WeaponList.Add(RocketLauncher);
+	}
+	if (WeaponList.Num() > 0)
+		EquipWeapon(0);
+}
+
+
+void AFWPlayerCharacterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (bIsDying)
+	{
+		DyingCounter = FMath::Clamp(DyingCounter + DeltaTime, 0.f, TimeToDeath);
+		FRotator NewRotation = FMath::Lerp(PreDeathRotation, FRotator(PreDeathRotation.Pitch, PreDeathRotation.Yaw, 90.f), DyingCounter);
+		SetActorRotation(NewRotation);
 	}
 }
 
@@ -64,25 +80,27 @@ void AFWPlayerCharacterBase::Landed(const FHitResult& Hit)
 
 void AFWPlayerCharacterBase::EquipWeapon(int32 Index)
 {
-	if (CurrentWeapon && CurrentWeapon->GetWeaponData() != Weapons[Index])
+	if (CurrentWeapon && CurrentWeapon != WeaponList[Index])
 	{
-		CurrentWeapon->SetVisibility(false);
 		CurrentWeapon->UnequipWeapon();
 	}
-	CurrentWeapon = WeaponComponents[Weapons[Index]->Type];
-	CurrentWeapon->EquipWeapon();
-	CurrentWeapon->SetVisibility(true);
+	CurrentWeapon = WeaponList[Index];
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->EquipWeapon();
+	}
 }
 
-TMap<EWeaponType, class UFWPlayerWeaponBase*> AFWPlayerCharacterBase::GetWeapons() const
+TArray<class AFWPlayerWeapon*> AFWPlayerCharacterBase::GetWeapons() const
 {
-	return WeaponComponents;
+	return WeaponList;
 }
 
 float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	if (!Cast<AFWPlayerController>(EventInstigator))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Damage Taken: %f, %s"), DamageAmount, *DamageCauser->GetName());
 		OnDamageTaken.Broadcast();
 		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
@@ -91,10 +109,17 @@ float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent
 
 void AFWPlayerCharacterBase::OnDeath()
 {
-	DisableInput(Cast<APlayerController>(GetController()));
+	AFWPlayerController* PlayerController = GetController<AFWPlayerController>();
+	if (PlayerController)
+	{
+		PlayerController->Disable();
+		bIsDying = true;
+		PreDeathRotation = GetActorRotation();
+		GetFirstPersonCameraComponent()->bUsePawnControlRotation = false;
+	}
 }
 
-class UFWPlayerWeaponBase* AFWPlayerCharacterBase::GetCurrentWeapon() const
+class AFWPlayerWeapon* AFWPlayerCharacterBase::GetCurrentWeapon() const
 {
 	return CurrentWeapon;
 }

@@ -25,6 +25,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		class USceneComponent* MuzzleLocationComponent;
 
+	UPROPERTY()
+		TArray<class UMaterialInstanceDynamic*> ChassisMaterialInstances;
+	UPROPERTY()
+		TArray<class UMaterialInstanceDynamic*> TurretMaterialInstances;
+	UPROPERTY()
+		TArray<class UMaterialInstanceDynamic*> BarrelMaterialInstances;
+
+	void BeginPlay() override;
+
 	void Tick(float DeltaTime) override;
 
 public:
@@ -49,4 +58,8 @@ public:
 	virtual bool IsDoneFiring();
 protected:
 	virtual void OnDeath() override;
+	bool bIsDying = false;
+	UPROPERTY(EditDefaultsOnly)
+		float DissolveDelay = 1.0f;
+	float DissolveCounter;
 };

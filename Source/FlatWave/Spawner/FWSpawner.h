@@ -10,9 +10,7 @@ UCLASS()
 class FLATWAVE_API AFWSpawner : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+public:
 	AFWSpawner();
 
 protected:
@@ -29,7 +27,7 @@ protected:
 	virtual AActor* SpawnActorInternal(UClass* ActorClass, FVector Location, FRotator Rotation);
 	virtual FVector GetSpawnLocation();
 	virtual FRotator GetSpawnRotation();
-public:	
+public:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AActor> DefaultSpawnedClass;
 	UPROPERTY(EditDefaultsOnly)

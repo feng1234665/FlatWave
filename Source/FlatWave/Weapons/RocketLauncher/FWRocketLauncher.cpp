@@ -6,29 +6,30 @@
 #include "Tank/FWEnemyHoverTank.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "FWRocketLauncherData.h"
+#include "Components/StaticMeshComponent.h"
 
-void UFWRocketLauncher::Init(class UFWWeaponData* NewWeaponData, FVector Offset)
+void AFWRocketLauncher::BeginPlay()
 {
-	Super::Init(NewWeaponData, Offset);
-	InitialRelativeLocation = GetRelativeTransform().GetLocation();
+	Super::BeginPlay();
+	InitialRelativeLocation = WeaponMesh->GetRelativeTransform().GetLocation();
 }
 
-void UFWRocketLauncher::UnequipWeapon()
+void AFWRocketLauncher::UnequipWeapon()
 {
 	Super::UnequipWeapon();
 	ChargedRocketsChargeCounter = 0.f;
 	AmountRocketsCharged = 0;
 	bFiringChargedRockets = false;
-	SetRelativeLocation(InitialRelativeLocation);
+	WeaponMesh->SetRelativeLocation(InitialRelativeLocation);
 }
 
-void UFWRocketLauncher::AltTriggerPressed()
+void AFWRocketLauncher::AltTriggerPressed()
 {
 	Super::AltTriggerPressed();
 	ChargedRocketsChargeCounter = 0.f;
 }
 
-void UFWRocketLauncher::AltTriggerReleased()
+void AFWRocketLauncher::AltTriggerReleased()
 {
 	Super::AltTriggerReleased();
 	if (AmountRocketsCharged > 0)
@@ -39,14 +40,14 @@ void UFWRocketLauncher::AltTriggerReleased()
 	}
 }
 
-bool UFWRocketLauncher::CanFire()
+bool AFWRocketLauncher::CanFire()
 {
 	return Super::CanFire() && !bFiringChargedRockets && !bAltTriggerPressed;
 }
 
-void UFWRocketLauncher::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void AFWRocketLauncher::Tick(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::Tick(DeltaTime);
 	UFWRocketLauncherData* Data = GetWeaponDataAs<UFWRocketLauncherData>();
 	if (bAltTriggerPressed && AmountRocketsCharged < Data->MaxRocketsChargable && CurrentAmmo > 0)
 	{
@@ -76,26 +77,25 @@ void UFWRocketLauncher::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		if (FireRateCounter > 0.f)
 		{
 			float FireRatePercent = 1.f - (FireRateCounter / GetFireRatePerSecond());
-			FVector NewRelativeLocation = FMath::Lerp<FVector>(GetRelativeTransform().GetLocation(), InitialRelativeLocation, FireRatePercent);
-			SetRelativeLocation(NewRelativeLocation);
+			FVector NewRelativeLocation = FMath::Lerp<FVector>(WeaponMesh->GetRelativeTransform().GetLocation(), InitialRelativeLocation, FireRatePercent);
+			WeaponMesh->SetRelativeLocation(NewRelativeLocation);
 		}
 	}
 }
 
-class AFWProjectile* UFWRocketLauncher::FireProjectile()
+void AFWRocketLauncher::FireProjectile()
 {
-	AFWProjectile* FiredRocket = Super::FireProjectile();
-	FVector CurrentLocalLocation = GetRelativeTransform().GetLocation();
-	SetRelativeLocation(CurrentLocalLocation + FVector(-20.f, 0.f, 0.f));
-	return FiredRocket;
+	Super::FireProjectile();
+	FVector CurrentLocalLocation = WeaponMesh->GetRelativeTransform().GetLocation();
+	WeaponMesh->SetRelativeLocation(CurrentLocalLocation + FVector(-20.f, 0.f, 0.f));
 }
 
-int32 UFWRocketLauncher::GetChargeAmount()
+int32 AFWRocketLauncher::GetChargeAmount()
 {
 	return AmountRocketsCharged;
 }
 
-float UFWRocketLauncher::GetChargePercent()
+float AFWRocketLauncher::GetChargePercent()
 {
 	return ChargedRocketsChargeCounter / GetWeaponDataAs<UFWRocketLauncherData>()->TimeToChargeRocket;
 }

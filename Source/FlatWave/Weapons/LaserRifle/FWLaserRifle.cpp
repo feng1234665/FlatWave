@@ -11,30 +11,26 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
-void UFWLaserRifle::Init(class UFWWeaponData* NewWeaponData, FVector Offset)
+AFWLaserRifle::AFWLaserRifle()
 {
-	Super::Init(NewWeaponData, Offset);
-	BeamParticles = UGameplayStatics::SpawnEmitterAttached(GetWeaponDataAs<UFWLaserRifleData>()->BeamParticles,
-														   GetOwnerCharacter()->GetWeaponComponentParent(),
-														   NAME_None,
-														   WeaponData->MuzzleOffset,
-														   FRotator::ZeroRotator,
-														   EAttachLocation::Type::KeepRelativeOffset,
-														   false);
-	InitialRelativeLocation = GetRelativeTransform().GetLocation();
+	BeamParticles = CreateDefaultSubobject<UParticleSystemComponent>("BeamParticles");
+	BeamParticles->SetupAttachment(WeaponMesh);
+	BeamParticles->bAutoActivate = false;
+	InitialRelativeLocation = WeaponMesh->GetRelativeTransform().GetLocation();
 }
 
-
-void UFWLaserRifle::UnequipWeapon()
+void AFWLaserRifle::UnequipWeapon()
 {
 	Super::UnequipWeapon();
 	ChargeCounter = 0.f;
-	SetRelativeLocation(InitialRelativeLocation);
+	WeaponMesh->SetRelativeLocation(InitialRelativeLocation);
 	ChangeAmmo(ChargedAmmoCounter);
 }
 
-void UFWLaserRifle::AltTriggerReleased()
+void AFWLaserRifle::AltTriggerReleased()
 {
 	Super::AltTriggerReleased();
 	if (ChargedAmmoCounter > GetWeaponDataAs<UFWLaserRifleData>()->MinChargeAmount)
@@ -49,26 +45,26 @@ void UFWLaserRifle::AltTriggerReleased()
 	ChargeCounter = 0.f;
 }
 
-bool UFWLaserRifle::CanFire()
+bool AFWLaserRifle::CanFire()
 {
 	return Super::CanFire() && !bAltTriggerPressed;
 }
 
-class AFWProjectile* UFWLaserRifle::FireProjectile()
+void AFWLaserRifle::FireProjectile()
 {
-	FVector CurrentLocalLocation = GetRelativeTransform().GetLocation();
-	SetRelativeLocation(CurrentLocalLocation + FVector(-20.f, 0.f, 0.f));
-	return Super::FireProjectile();
+	Super::FireProjectile();
+	FVector CurrentLocalLocation = WeaponMesh->GetRelativeTransform().GetLocation();
+	WeaponMesh->SetRelativeLocation(CurrentLocalLocation + FVector(-20.f, 0.f, 0.f));
 }
 
-void UFWLaserRifle::FireBeam()
+void AFWLaserRifle::FireBeam()
 {
 	UFWLaserRifleData* Data = GetWeaponDataAs<UFWLaserRifleData>();
-	BeamParticles->ActivateSystem();
+	ActivateBeamParticles();
 	TArray<FHitResult> Hits;
-	FVector Start = GetOwnerCharacter()->GetWeaponComponentParent()->GetComponentLocation() + FVector(0.f, 0.f, 50.f);
+	FVector Start = ProjectileSpawn->GetComponentLocation();
 	float Range = FMath::Lerp(WeaponData->ProjectileData->MaxRange, Data->MaxChargeRange, GetChargePercent());
-	FVector End = Start + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * Range;
+	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * Range;
 	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, COLLISION_PROJECTILE);
 	if (HasHit)
 	{
@@ -77,19 +73,31 @@ void UFWLaserRifle::FireBeam()
 			if (Hit.Actor.IsValid() && Hit.Actor.Get() != GetOwner())
 			{
 				int32 Damage = (int)FMath::Lerp(WeaponData->ProjectileData->ImpactDamage, Data->FullChargeDamage, GetChargePercent());
-				UFWUtilities::ApplyDamage(Hit.Actor.Get(),
-										  Damage,
-										  GetOwnerPlayerController(),
-										  GetOwner(),
-										  UFWDamgeTypeBase::StaticClass());
+				// 				GetOwnerPlayerController()->Server_ApplyDamage(Hit.Actor.Get(),
+				// 															   Damage,
+				// 															   GetOwnerPlayerController(),
+				// 															   GetOwnerCharacter(),
+				// 															   UFWDamgeTypeBase::StaticClass());
+				ApplyBeamDamage(Hit.Actor.Get(), Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *Hit.Actor.Get()->GetName());
 			}
 		}
 	}
 }
 
-void UFWLaserRifle::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void AFWLaserRifle::ApplyBeamDamage(AActor* Target, float Damage)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	UFWUtilities::ApplyDamage(Target, Damage, GetOwnerPlayerController(), GetOwnerCharacter(), UFWDamgeTypeBase::StaticClass());
+}
+
+void AFWLaserRifle::ActivateBeamParticles()
+{
+	BeamParticles->ActivateSystem();
+}
+
+void AFWLaserRifle::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 	UFWLaserRifleData* Data = GetWeaponDataAs<UFWLaserRifleData>();
 	if (bAltTriggerPressed)
 	{
@@ -120,12 +128,12 @@ void UFWLaserRifle::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	if (FireRateCounter > 0.f)
 	{
 		float FireRatePercent = 1.f - (FireRateCounter / GetFireRatePerSecond());
-		FVector NewRelativeLocation = FMath::Lerp<FVector>(GetRelativeTransform().GetLocation(), InitialRelativeLocation, FireRatePercent);
-		SetRelativeLocation(NewRelativeLocation);
+		FVector NewRelativeLocation = FMath::Lerp<FVector>(WeaponMesh->GetRelativeTransform().GetLocation(), InitialRelativeLocation, FireRatePercent);
+		WeaponMesh->SetRelativeLocation(NewRelativeLocation);
 	}
 }
 
-float UFWLaserRifle::GetChargePercent()
+float AFWLaserRifle::GetChargePercent()
 {
 	return (float)ChargedAmmoCounter / GetWeaponDataAs<UFWLaserRifleData>()->FullChargeAmmoCost;
 }

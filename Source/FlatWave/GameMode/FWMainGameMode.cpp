@@ -3,6 +3,9 @@
 #include "FWMainGameMode.h"
 #include "FWScenarioManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "UserWidget.h"
+#include "FWPlayerController.h"
+#include "FWUtilities.h"
 
 AFWMainGameMode::AFWMainGameMode()
 {
@@ -39,6 +42,8 @@ void AFWMainGameMode::UpdateRunning(float DeltaSeconds)
 	{
 		OnGameStart.Broadcast();
 		bEnteredGame = true;
+		AFWPlayerController* PlayerController = UFWUtilities::GetFirstFWPlayerController(this);
+		PlayerController->SetInputMode(FInputModeGameOnly());
 	}
 }
 
@@ -47,16 +52,40 @@ void AFWMainGameMode::SetGamePaused(bool IsPaused)
 	if (IsPaused)
 	{
 		CurrentState = EGameState::Paused;
+		UGameplayStatics::SetGamePaused(this, true);
+		if (!PauseWidget && PauseWidgetClass)
+		{
+			PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass);
+			PauseWidget->AddToViewport();
+		}
+		else
+		{
+			PauseWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		AFWPlayerController* PlayerController = UFWUtilities::GetFirstFWPlayerController(this);
+		PlayerController->bShowMouseCursor = true;
+		PlayerController->SetInputMode(FInputModeGameAndUI());
 	}
 	else
 	{
 		CurrentState = EGameState::Running;
+		UGameplayStatics::SetGamePaused(this, false);
+		if (PauseWidget)
+			PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		AFWPlayerController* PlayerController = UFWUtilities::GetFirstFWPlayerController(this);
+		PlayerController->bShowMouseCursor = false;
+		PlayerController->SetInputMode(FInputModeGameOnly());
 	}
 }
 
 bool AFWMainGameMode::IsGamePaused()
 {
 	return CurrentState == EGameState::Paused;
+}
+
+void AFWMainGameMode::TogglePause()
+{
+	SetGamePaused(!IsGamePaused());
 }
 
 bool AFWMainGameMode::IsGameWon()

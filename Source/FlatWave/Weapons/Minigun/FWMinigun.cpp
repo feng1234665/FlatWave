@@ -13,49 +13,30 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "FlatWave.h"
 #include "Camera/CameraComponent.h"
+#include "Components/StaticMeshComponent.h"
 
-void UFWMinigun::Init(UFWWeaponData* NewWeaponData, FVector WeaponOffset)
+AFWMinigun::AFWMinigun()
 {
-	Super::Init(NewWeaponData, WeaponOffset);
-	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
-	if (Data->MuzzleParticles)
-	{
-		MuzzleParticles = UGameplayStatics::SpawnEmitterAttached(Data->MuzzleParticles,
-																 GetOwnerCharacter()->GetWeaponComponentParent(),
-																 NAME_None,
-																 WeaponData->MuzzleOffset,
-																 FRotator::ZeroRotator,
-																 EAttachLocation::KeepRelativeOffset,
-																 false);
-		MuzzleParticles->SetAutoActivate(false);
-	}
-	if (Data->ShellParticles)
-	{
-		ShellParticles = UGameplayStatics::SpawnEmitterAttached(Data->ShellParticles,
-																GetOwnerCharacter()->GetWeaponComponentParent(),
-																NAME_None,
-																Data->ShellOffset,
-																FRotator::ZeroRotator,
-																EAttachLocation::KeepRelativeOffset,
-																false);
-	}
+	MuzzleParticles = CreateDefaultSubobject<UParticleSystemComponent>("MuzzleParticles");
+	MuzzleParticles->SetupAttachment(RootComponent);
+	MuzzleParticles->bAutoActivate = false;
+
+	ShellParticles = CreateDefaultSubobject<UParticleSystemComponent>("ShellParticles");
+	ShellParticles->SetupAttachment(RootComponent);
+	ShellParticles->bAutoActivate = false;
+
 	bCanFireOnPressed = false;
-	WarmupCounter = 0.f;
 }
 
-void UFWMinigun::UnequipWeapon()
+void AFWMinigun::FireProjectile()
 {
-	Super::UnequipWeapon();
-}
-
-AFWProjectile* UFWMinigun::FireProjectile()
-{
-	AFWProjectile* SpawnedProjectile = Super::FireProjectile();
-	MuzzleParticles->ActivateSystem();
-	ShellParticles->ActivateSystem();
+	Super::FireProjectile();
+	ActivateParticles();
 	TArray<FHitResult> Hits;
-	FVector Start = GetOwnerCharacter()->GetWeaponComponentParent()->GetComponentLocation();
+	FVector Start = GetActorLocation();
 	FVector End = Start + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * WeaponData->ProjectileData->MaxRange;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(COLLISION_PROJECTILE);
 	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, COLLISION_PROJECTILE);
 	if (HasHit)
 	{
@@ -66,15 +47,14 @@ AFWProjectile* UFWMinigun::FireProjectile()
 				UFWUtilities::ApplyDamage(Hit.Actor.Get(),
 										  WeaponData->ProjectileData->ImpactDamage,
 										  GetOwnerPlayerController(),
-										  GetOwner(),
+										  GetOwnerCharacter(),
 										  UFWDamgeTypeBase::StaticClass());
 			}
 		}
 	}
-	return SpawnedProjectile;
 }
 
-void UFWMinigun::TriggerPressed()
+void AFWMinigun::TriggerPressed()
 {
 	Super::TriggerPressed();
 	if (!bAltTriggerPressed)
@@ -83,24 +63,30 @@ void UFWMinigun::TriggerPressed()
 	}
 }
 
-bool UFWMinigun::CanStartWarmup()
+void AFWMinigun::ActivateParticles()
+{
+	ShellParticles->ActivateSystem();
+	MuzzleParticles->ActivateSystem();
+}
+
+bool AFWMinigun::CanStartWarmup()
 {
 	return bTriggerPressed || bAltTriggerPressed;
 }
 
-bool UFWMinigun::CanFire()
+bool AFWMinigun::CanFire()
 {
 	return (bTriggerPressed || ((bTriggerPressed && bAltTriggerPressed))) && WarmupCounter >= GetWeaponDataAs<UFWMinigunData>()->WarmupTime && CurrentAmmo > 0;
 }
 
-float UFWMinigun::GetWarmupCounter()
+float AFWMinigun::GetWarmupCounter()
 {
 	return WarmupCounter;
 }
 
-void UFWMinigun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void AFWMinigun::Tick(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::Tick(DeltaTime);
 	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
 	if (FireRateCounter <= 0.f && WeaponData->bFireContinuously && CanFire())
 	{
@@ -112,7 +98,7 @@ void UFWMinigun::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 		float WarmupPercent = WarmupCounter / Data->WarmupTime;
 		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
 		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
-		AddRelativeRotation(Rotation);
+		WeaponMesh->AddRelativeRotation(Rotation);
 	}
 	else
 	{
@@ -120,6 +106,6 @@ void UFWMinigun::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 		float WarmupPercent = WarmupCounter / Data->WarmupTime;
 		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
 		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
-		AddRelativeRotation(Rotation);
+		WeaponMesh->AddRelativeRotation(Rotation);
 	}
 }

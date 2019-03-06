@@ -3,19 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/StaticMeshComponent.h"
-#include "FWPlayerWeaponBase.generated.h"
+#include "GameFramework/Actor.h"
+#include "FWPlayerWeapon.generated.h"
 
-UCLASS()
-class FLATWAVE_API UFWPlayerWeaponBase : public UStaticMeshComponent
+UCLASS(Blueprintable)
+class FLATWAVE_API AFWPlayerWeapon : public AActor
 {
 	GENERATED_BODY()
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* Root;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UStaticMeshComponent* WeaponMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* ProjectileSpawn;
 public:
-	UFWPlayerWeaponBase();
+	AFWPlayerWeapon();
 
 	virtual void BeginPlay() override;
-
-	virtual void Init(class UFWWeaponData* WeaponData, FVector Offset);
+	virtual void Tick(float DeltaTime);
 
 	virtual void EquipWeapon();
 	virtual void UnequipWeapon();
@@ -29,7 +35,7 @@ public:
 	virtual bool CanFire();
 	virtual float GetSpread();
 
-	virtual class AFWProjectile* FireProjectile();
+	virtual void FireProjectile();
 
 	void ChangeAmmo(int32 Amount);
 
@@ -47,8 +53,9 @@ public:
 
 	float GetFireRatePerSecond();
 
+	UPROPERTY()
+		class AFWPlayerCharacterBase* OwnerPlayer;
 protected:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 	float FireRateCounter = 0.f;
 	bool bCanFireOnPressed = true;
@@ -57,7 +64,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		class UFWWeaponData* WeaponData;
-	int32 CurrentAmmo = 0;
+	UPROPERTY()
+		int32 CurrentAmmo = 0;
 
 	FVector GetProjectileSpawnLocation();
 
@@ -69,7 +77,7 @@ protected:
 };
 
 template<class T>
-T* UFWPlayerWeaponBase::GetWeaponDataAs() const
+T* AFWPlayerWeapon::GetWeaponDataAs() const
 {
 	return Cast<T>(WeaponData);
 }

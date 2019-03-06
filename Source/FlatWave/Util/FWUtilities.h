@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 		static void ApplyRadialImpulse(UObject* WorldContextObject, FVector ImpulseOrigin, float ImpulseRadius, float ImpulseStrength);
 
+	UFUNCTION(BlueprintCallable)
+		static void ChangeVolume(class USoundClass* SoundClass, float NewVolume);
+
 	template<typename T>
 	static FORCEINLINE void ShuffleArray(TArray<T>& Array);
 };
