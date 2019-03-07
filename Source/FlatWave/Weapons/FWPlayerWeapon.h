@@ -55,6 +55,11 @@ public:
 
 	UPROPERTY()
 		class AFWPlayerCharacterBase* OwnerPlayer;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		bool IsTriggerPressed() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		bool IsAltTriggerPressed() const;
 protected:
 
 	float FireRateCounter = 0.f;

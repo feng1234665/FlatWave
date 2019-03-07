@@ -161,6 +161,16 @@ float AFWPlayerWeapon::GetFireRatePerSecond()
 	return 1 / (WeaponData->FireRate / 60.f);
 }
 
+bool AFWPlayerWeapon::IsTriggerPressed() const
+{
+	return bTriggerPressed;
+}
+
+bool AFWPlayerWeapon::IsAltTriggerPressed() const
+{
+	return bAltTriggerPressed;
+}
+
 FVector AFWPlayerWeapon::GetProjectileSpawnLocation()
 {
 	return ProjectileSpawn->GetComponentLocation();
