@@ -7,10 +7,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/PrimitiveComponent.h"
 #include "Sound/SoundClass.h"
+#include "FWGameInstance.h"
 
 class AFWMainGameMode* UFWUtilities::GetFWMainGameMode(UObject* WorldContextObject)
 {
 	return Cast<AFWMainGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+}
+
+class UFWGameInstance* UFWUtilities::GetFWGameInstance(UObject* WorldContextObject)
+{
+	return Cast<UFWGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 }
 
 class AFWPlayerController* UFWUtilities::GetFWPlayerController(UObject* WorldContextObject, int32 Index)

@@ -24,7 +24,12 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-		void DestroyProjectile();
+	UPROPERTY()
+		class UAudioComponent* MovementSoundComponent;
+
+	void Destroyed() override;
+
+	void DestroyProjectile();
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 public:

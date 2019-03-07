@@ -70,6 +70,20 @@ void AFWPlayerCharacterBase::Tick(float DeltaTime)
 		FRotator NewRotation = FMath::Lerp(PreDeathRotation, FRotator(PreDeathRotation.Pitch, PreDeathRotation.Yaw, 90.f), DyingCounter);
 		SetActorRotation(NewRotation);
 	}
+
+	if (GetVelocity().SizeSquared() > 0.f && GetMovementComponent()->IsMovingOnGround() && FootStepSound)
+	{
+		FootStepCounter += DeltaTime;
+		if (FootStepCounter > FootStepInterval)
+		{
+			FootStepCounter = 0.f;
+			UGameplayStatics::PlaySoundAtLocation(this, FootStepSound, GetActorLocation());
+		}
+	}
+	else if (FootStepCounter > 0.f)
+	{
+		FootStepCounter = 0.f;
+	}
 }
 
 void AFWPlayerCharacterBase::Landed(const FHitResult& Hit)
@@ -87,8 +101,23 @@ void AFWPlayerCharacterBase::EquipWeapon(int32 Index)
 	CurrentWeapon = WeaponList[Index];
 	if (CurrentWeapon)
 	{
+		CurrentWeaponIndex = Index;
 		CurrentWeapon->EquipWeapon();
 	}
+}
+
+int32 AFWPlayerCharacterBase::GetCurrentWeaponIndex() const
+{
+	return CurrentWeaponIndex;
+}
+
+class AFWPlayerWeapon* AFWPlayerCharacterBase::GetWeaponAt(int32 Index) const
+{
+	if (Index < 0 || Index >= WeaponList.Num())
+	{
+		return nullptr;
+	}
+	return WeaponList[Index];
 }
 
 TArray<class AFWPlayerWeapon*> AFWPlayerCharacterBase::GetWeapons() const

@@ -30,4 +30,6 @@ void AFWEnemySuicideBot::Explode()
 	TArray<AActor*> IgnoredActors;
 	IgnoredActors.Add(this);
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, UFWDamgeTypeBase::StaticClass(), IgnoredActors, this, GetController(), false, TRACE_NOCOLLISION);
+	if (ExplosionSound)
+		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 }

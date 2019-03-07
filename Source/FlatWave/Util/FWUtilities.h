@@ -16,6 +16,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
 		static class AFWMainGameMode* GetFWMainGameMode(UObject* WorldContextObject);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
+		static class UFWGameInstance* GetFWGameInstance(UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
 		static class AFWPlayerController* GetFWPlayerController(UObject* WorldContextObject, int32 Index);

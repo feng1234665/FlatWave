@@ -14,6 +14,7 @@
 #include "FlatWave.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/AudioComponent.h"
 
 AFWMinigun::AFWMinigun()
 {
@@ -24,6 +25,15 @@ AFWMinigun::AFWMinigun()
 	ShellParticles = CreateDefaultSubobject<UParticleSystemComponent>("ShellParticles");
 	ShellParticles->SetupAttachment(RootComponent);
 	ShellParticles->bAutoActivate = false;
+
+	SpinUpSound = CreateDefaultSubobject<UAudioComponent>("SpinUpSound");
+	SpinUpSound->SetupAttachment(RootComponent);
+	SpinDownSound = CreateDefaultSubobject<UAudioComponent>("SpinDownSound");
+	SpinDownSound->SetupAttachment(RootComponent);
+	SpinLoopSound = CreateDefaultSubobject<UAudioComponent>("SpinLoopSound");
+	SpinLoopSound->SetupAttachment(RootComponent);
+	FireSound = CreateDefaultSubobject<UAudioComponent>("FireSound");
+	FireSound->SetupAttachment(RootComponent);
 
 	bCanFireOnPressed = false;
 }
@@ -54,12 +64,30 @@ void AFWMinigun::FireProjectile()
 	}
 }
 
+void AFWMinigun::UnequipWeapon()
+{
+	Super::UnequipWeapon();
+	FireSound->Stop();
+	SpinLoopSound->Stop();
+	SpinUpSound->Stop();
+	SpinDownSound->Stop();
+}
+
 void AFWMinigun::TriggerPressed()
 {
 	Super::TriggerPressed();
 	if (!bAltTriggerPressed)
 	{
 		FireRateCounter = GetWeaponDataAs<UFWMinigunData>()->WarmupTime;
+	}
+}
+
+void AFWMinigun::TriggerReleased()
+{
+	Super::TriggerReleased();
+	if (FireSound->IsPlaying())
+	{
+		FireSound->Stop();
 	}
 }
 
@@ -95,17 +123,47 @@ void AFWMinigun::Tick(float DeltaTime)
 	if (CanStartWarmup())
 	{
 		WarmupCounter = FMath::Clamp(WarmupCounter + DeltaTime, 0.f, Data->WarmupTime);
-		float WarmupPercent = WarmupCounter / Data->WarmupTime;
+		float WarmupPercent = GetWarmupPercent();
+		if (WarmupPercent < 1.f && !SpinUpSound->IsPlaying())
+		{
+			SpinUpSound->Play();
+		}
 		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
 		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
 		WeaponMesh->AddRelativeRotation(Rotation);
 	}
 	else
 	{
+		SpinLoopSound->Stop();
 		WarmupCounter = FMath::Clamp(WarmupCounter - DeltaTime, 0.f, Data->WarmupTime);
-		float WarmupPercent = WarmupCounter / Data->WarmupTime;
+		float WarmupPercent = GetWarmupPercent();
+		if (WarmupPercent > 0.f && !SpinDownSound->IsPlaying())
+		{
+			SpinDownSound->Play();
+		}
 		float RotationRate = FMath::Lerp<float>(0, Data->RotationRate, WarmupPercent);
 		FRotator Rotation(0.f, 0.f, RotationRate * DeltaTime);
 		WeaponMesh->AddRelativeRotation(Rotation);
 	}
+	if (GetWarmupPercent() >= 1.f)
+	{
+		if (bTriggerPressed && !FireSound->IsPlaying())
+		{
+			FireSound->Play();
+			SpinLoopSound->Stop();
+		}
+		else if (!bTriggerPressed)
+		{
+			if (bAltTriggerPressed && !SpinLoopSound->IsPlaying())
+			{
+				SpinLoopSound->Play();
+			}
+		}
+	}
+}
+
+float AFWMinigun::GetWarmupPercent()
+{
+	UFWMinigunData* Data = GetWeaponDataAs<UFWMinigunData>();
+	return WarmupCounter / Data->WarmupTime;
 }
