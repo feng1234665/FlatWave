@@ -24,4 +24,13 @@ public:
 		float GetMouseSensitivityScale();
 private:
 	float MouseSensitivityScale = 1.f;
+
+	UPROPERTY(EditDefaultsOnly)
+		class USoundClass* MasterClass;
+	UPROPERTY(EditDefaultsOnly)
+		class USoundClass* EffectsClass;
+	UPROPERTY(EditDefaultsOnly)
+		class USoundClass* MusicClass;
+
+	void Init() override;
 };
