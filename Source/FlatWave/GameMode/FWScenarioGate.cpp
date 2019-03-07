@@ -9,7 +9,8 @@ void AFWScenarioGate::BeginPlay()
 {
 	Super::BeginPlay();
 	AFWMainGameMode* GameMode = UFWUtilities::GetFWMainGameMode(this);
-	GameMode->OnGameStart.AddDynamic(this, &AFWScenarioGate::BindActions);
+	if (GameMode)
+		GameMode->OnGameStart.AddDynamic(this, &AFWScenarioGate::BindActions);
 }
 
 void AFWScenarioGate::BindActions()

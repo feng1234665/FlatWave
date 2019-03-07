@@ -43,10 +43,15 @@ protected:
 
 	UPROPERTY()
 		class AFWPlayerWeapon* CurrentWeapon;
+	int32 CurrentWeaponIndex;
 	UPROPERTY()
 		TArray<class AFWPlayerWeapon*> WeaponList;
 public:
 	void EquipWeapon(int32 Index);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		int32 GetCurrentWeaponIndex() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		class AFWPlayerWeapon* GetWeaponAt(int32 Index) const;
 	TArray<class AFWPlayerWeapon*> GetWeapons() const;
 protected:
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -55,6 +60,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Audio)
 		class USoundBase* JumpSound;
+	UPROPERTY(EditDefaultsOnly, Category = Audio)
+		class USoundBase* FootStepSound;
+	UPROPERTY(EditDefaultsOnly)
+		float FootStepInterval = .5f;
+	float FootStepCounter;
 
 	void OnDeath() override;
 public:

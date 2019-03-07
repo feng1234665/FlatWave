@@ -7,6 +7,7 @@
 #include "FWProjectileData.h"
 #include "FWWeaponData.h"
 #include "FWMainGameMode.h"
+#include "FWGameInstance.h"
 
 AFWPlayerController::AFWPlayerController()
 {
@@ -32,6 +33,9 @@ void AFWPlayerController::SetupInputComponent()
 	InputComponent->BindAction("SwitchToThirdWeapon", IE_Pressed, this, &AFWPlayerController::SwitchToThirdWeapon);
 
 	InputComponent->BindAction("PauseGame", IE_Pressed, this, &AFWPlayerController::PausePressed).bExecuteWhenPaused = true;
+
+	InputComponent->BindAction("ScrollWeaponUp", IE_Pressed, this, &AFWPlayerController::SwitchToNextWeapon);
+	InputComponent->BindAction("ScrollWeaponDown", IE_Pressed, this, &AFWPlayerController::SwitchToPreviousWeapon);
 
 	InputComponent->BindAxis("MoveForward", this, &AFWPlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AFWPlayerController::MoveRight);
@@ -97,6 +101,30 @@ void AFWPlayerController::SwitchToThirdWeapon()
 		GetPlayerPawn()->EquipWeapon(2);
 }
 
+void AFWPlayerController::SwitchToNextWeapon()
+{
+	if (GetPawn())
+	{
+		int32 CurrentIndex = GetPlayerPawn()->GetCurrentWeaponIndex();
+		int32 NextIndex = CurrentIndex + 1;
+		if (NextIndex > 2)
+			NextIndex = 0;
+		GetPlayerPawn()->EquipWeapon(NextIndex);
+	}
+}
+
+void AFWPlayerController::SwitchToPreviousWeapon()
+{
+	if (GetPawn())
+	{
+		int32 CurrentIndex = GetPlayerPawn()->GetCurrentWeaponIndex();
+		int32 PreviousIndex = CurrentIndex - 1;
+		if (PreviousIndex < 0)
+			PreviousIndex = 2;
+		GetPlayerPawn()->EquipWeapon(PreviousIndex);
+	}
+}
+
 void AFWPlayerController::MoveForward(float Value)
 {
 	if (GetPawn())
@@ -111,12 +139,14 @@ void AFWPlayerController::MoveRight(float Value)
 
 void AFWPlayerController::TurnYaw(float Value)
 {
-	AddYawInput(Value);
+	float Scale = UFWUtilities::GetFWGameInstance(this)->GetMouseSensitivityScale();
+	AddYawInput(Value * Scale);
 }
 
 void AFWPlayerController::TurnPitch(float Value)
 {
-	AddPitchInput(Value);
+	float Scale = UFWUtilities::GetFWGameInstance(this)->GetMouseSensitivityScale();
+	AddPitchInput(Value * Scale);
 }
 
 void AFWPlayerController::Jump()

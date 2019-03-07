@@ -13,9 +13,9 @@ class FLATWAVE_API AFWScenarioGate : public AActor
 protected:
 	void BeginPlay() override;
 public:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void Activate();
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void Deactivate();
 	UPROPERTY(EditAnywhere)
 		int32 StartStageIndex = -1;

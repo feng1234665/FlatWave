@@ -32,6 +32,9 @@ private:
 	void SwitchToSecondWeapon();
 	void SwitchToThirdWeapon();
 
+	void SwitchToNextWeapon();
+	void SwitchToPreviousWeapon();
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 

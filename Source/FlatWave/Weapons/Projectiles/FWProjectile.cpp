@@ -10,6 +10,7 @@
 #include "FWDamgeTypeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "FlatWave.h"
+#include "Components/AudioComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWProjectile, Warning, All);
 
@@ -32,11 +33,27 @@ void AFWProjectile::BeginPlay()
 	ProjectileMovement->ProjectileGravityScale = ProjectileData->GravityScale;
 	ProjectileMovement->SetVelocityInLocalSpace(FVector(ProjectileData->InitialVelocity, 0.f, 0.f));
 	SetLifeSpan(ProjectileData->Lifetime);
+	if (ProjectileData->MovementSound)
+	{
+		MovementSoundComponent = UGameplayStatics::SpawnSoundAttached(ProjectileData->MovementSound, RootComponent);
+		if (MovementSoundComponent)
+			MovementSoundComponent->Play();
+	}
 }
 
 void AFWProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AFWProjectile::Destroyed()
+{
+	Super::Destroyed();
+	if (MovementSoundComponent)
+	{
+		MovementSoundComponent->Stop();
+		MovementSoundComponent->DestroyComponent();
+	}
 }
 
 void AFWProjectile::DestroyProjectile()

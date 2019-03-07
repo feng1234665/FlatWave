@@ -73,15 +73,13 @@ void AFWLaserRifle::FireBeam()
 			if (Hit.Actor.IsValid() && Hit.Actor.Get() != GetOwner())
 			{
 				int32 Damage = (int)FMath::Lerp(WeaponData->ProjectileData->ImpactDamage, Data->FullChargeDamage, GetChargePercent());
-				// 				GetOwnerPlayerController()->Server_ApplyDamage(Hit.Actor.Get(),
-				// 															   Damage,
-				// 															   GetOwnerPlayerController(),
-				// 															   GetOwnerCharacter(),
-				// 															   UFWDamgeTypeBase::StaticClass());
 				ApplyBeamDamage(Hit.Actor.Get(), Damage);
-				UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *Hit.Actor.Get()->GetName());
 			}
 		}
+	}
+	if (Data->LaserBeamFireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, Data->LaserBeamFireSound, Start);
 	}
 }
 

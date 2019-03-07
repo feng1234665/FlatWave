@@ -27,6 +27,8 @@ protected:
 		float ExplosionRadius = 400.f;
 	UPROPERTY(EditDefaultsOnly)
 		class UParticleSystem* ExplosionParticleSystem;
+	UPROPERTY(EditDefaultsOnly)
+		class USoundBase* ExplosionSound;
 
 	void OnDeath() override;
 public:

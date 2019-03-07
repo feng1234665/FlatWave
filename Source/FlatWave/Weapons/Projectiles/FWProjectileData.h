@@ -55,4 +55,7 @@ public:
 		float ExplosionDamage = 100.f;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = PROJECTILE)
 		float ExplosionRange = 200.f;
+
+	UPROPERTY(EditDefaultsOnly)
+		class USoundBase* MovementSound;
 };
