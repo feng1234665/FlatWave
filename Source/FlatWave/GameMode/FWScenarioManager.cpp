@@ -92,15 +92,13 @@ void AFWScenarioManager::ProcessWave(int32 Index)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Process Wave: %d"), Index);
 	FGameWave Wave = StageSpawners[CurrentStage].Scenario->Waves[Index];
-	for (const TPair<TSubclassOf<AFWEnemyCharacterBase>, int32> Enemy : Wave.Enemies)
+	for (const FGameWaveDetails WaveDetails : Wave.Enemies)
 	{
-		TSubclassOf<AFWEnemyCharacterBase> EnemyClass = Enemy.Key;
-		int32 Amount = Enemy.Value;
-		SetupEnemySpawners(EnemyClass, Amount);
+		SetupEnemySpawners(WaveDetails.EnemyClass, WaveDetails.SpawnAmount, WaveDetails.SpawnInterval, WaveDetails.bRequireDeathForCompletion);
 	}
 }
 
-void AFWScenarioManager::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount)
+void AFWScenarioManager::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount, float SpawnInterval, bool RequireDeathForCompletion)
 {
 	if (Amount == 0 || !EnemyClass)
 	{
@@ -129,7 +127,7 @@ void AFWScenarioManager::SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterB
 			ActualAmount = SpawnsLeft;
 		}
 		SpawnsLeft -= ActualAmount;
-		Spawner->SetupSpawner(ActualAmount);
+		Spawner->SetupSpawner(ActualAmount, SpawnInterval, RequireDeathForCompletion);
 		if (SpawnsLeft <= 0)
 		{
 			break;

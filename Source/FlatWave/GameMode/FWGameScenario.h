@@ -8,12 +8,27 @@
 #include "FWGameScenario.generated.h"
 
 USTRUCT()
+struct FGameWaveDetails
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AFWEnemyCharacterBase> EnemyClass;
+	UPROPERTY(EditDefaultsOnly)
+		int32 SpawnAmount = 1;
+	UPROPERTY(EditDefaultsOnly)
+		float SpawnInterval;
+	UPROPERTY(EditDefaultsOnly)
+		bool bRequireDeathForCompletion = true;
+};
+
+USTRUCT()
 struct FGameWave
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly)
-		TMap<TSubclassOf<AFWEnemyCharacterBase>, int32> Enemies;
+		TArray<FGameWaveDetails> Enemies;
 };
 
 UCLASS()

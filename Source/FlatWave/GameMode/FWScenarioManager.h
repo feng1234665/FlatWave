@@ -57,5 +57,5 @@ private:
 	void ProcessWave(int32 Index);
 	bool IsWaveFinished(int32 Index);
 
-	void SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount);
+	void SetupEnemySpawners(TSubclassOf<class AFWEnemyCharacterBase> EnemyClass, int32 Amount, float SpawnInterval, bool RequireDeathForCompletion);
 };
