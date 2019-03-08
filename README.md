@@ -1,14 +1,18 @@
 # FlatWave
 
-Coop Wave Shooter
+FlatWave is a small First-Person Shooter where the player has to kill all enemies in his way to reach the end of the level.
 
-Smallish arenas
+Includes one level (with a small tutorial in the beginning), three different weapons (Laser Rifle, Minigun and Rocket Launcher) and three enemy types.
 
-min 1 projectile, min 1 hit scan weapon(rocket launcher, minigun, cluster grenades, flak gun, laser beam)
+## Controls
 
-2-3 enemy types
-
-powerups
+Movement: WASD
+Camera: Mouse
+Jump: Spacebar
+Dodge: Movement + Shift
+Weapon Fire: Left Mouse Button
+Alternative Weapon Fire: Hold (and release) Right Mouse Button
+Pause: Escape
 
 ## Credits
 
