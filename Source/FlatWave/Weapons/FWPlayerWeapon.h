@@ -73,6 +73,10 @@ protected:
 		int32 CurrentAmmo = 0;
 
 	FVector GetProjectileSpawnLocation();
+	UPROPERTY(EditDefaultsOnly)
+		float AimAdjustmentCheckDistance = 50000.f;
+	UPROPERTY(EditDefaultsOnly)
+		float MinDistanceForAimAdjustments = 500.f;
 
 	class AFWPlayerCharacterBase* GetOwnerCharacter() const;
 	class AFWPlayerController* GetOwnerPlayerController() const;

@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "FWUtilities.h"
+#include "Camera/CameraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerWeapon, Warning, All);
 
@@ -76,18 +77,13 @@ void AFWPlayerWeapon::TriggerReleased()
 
 void AFWPlayerWeapon::AltTriggerPressed()
 {
-	if (!WeaponData)
-	{
-		UE_LOG(LogFWPlayerWeapon, Warning, TEXT("No WeaponData!"));
-		return;
-	}
-	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerClicked"));
+	//UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerClicked"));
 	bAltTriggerPressed = true;
 }
 
 void AFWPlayerWeapon::AltTriggerReleased()
 {
-	UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerReleased"));
+	//UE_LOG(LogFWPlayerWeapon, Warning, TEXT("AltTriggerReleased"));
 	bAltTriggerPressed = false;
 }
 
@@ -112,6 +108,18 @@ void AFWPlayerWeapon::FireProjectile()
 	{
 		FVector Location = GetProjectileSpawnLocation();
 		FRotator Rotation = GetOwnerCharacter()->GetProjectileSpawnRotation();
+		FVector AimRotationStart = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+		FVector AimRotationEnd = Location + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * AimAdjustmentCheckDistance;
+		FHitResult AimHit;
+		if (GetWorld()->LineTraceSingleByChannel(AimHit, AimRotationStart, AimRotationEnd, ECollisionChannel::ECC_Visibility))
+		{
+			if (AimHit.Distance > MinDistanceForAimAdjustments)
+			{
+				FVector AimDir = AimHit.ImpactPoint - Location;
+				AimDir.Normalize();
+				Rotation = AimDir.Rotation();
+			}
+		}
 		float Spread = GetSpread();
 		if (Spread > 0.f)
 		{
