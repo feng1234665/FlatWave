@@ -2,6 +2,17 @@
 
 #include "FWEnemySpawner.h"
 #include "FWEnemyCharacterBase.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+
+AFWEnemySpawner::AFWEnemySpawner()
+{
+	SpawnParticles = CreateDefaultSubobject<UParticleSystemComponent>("SpawnParticles");
+	SpawnParticles->SetupAttachment(RootComponent);
+
+	SpawnSound = CreateDefaultSubobject<UAudioComponent>("SpawnSound");
+	SpawnSound->SetupAttachment(RootComponent);
+}
 
 void AFWEnemySpawner::BeginPlay()
 {
@@ -21,6 +32,8 @@ void AFWEnemySpawner::Tick(float DeltaTime)
 			AActor* SpawnedActor = SpawnActorInternal(EnemyClass, GetSpawnLocation(), GetSpawnRotation());
 			if (SpawnedActor)
 			{
+				SpawnParticles->ActivateSystem();
+				SpawnSound->Play();
 				--RemainingSpawns;
 				if (bWaitForSpawnedEnemyDeaths)
 				{
@@ -36,11 +49,13 @@ void AFWEnemySpawner::SetActive(bool bIsActive)
 	bIsActivated = bIsActive;
 }
 
-void AFWEnemySpawner::SetupSpawner(int32 Amount)
+void AFWEnemySpawner::SetupSpawner(int32 Amount, float Interval, bool RequireDeathForCompletion)
 {
 	RemainingSpawns = Amount;
 	AmountToSpawn = Amount;
 	SpawnedEnemyDeathAmount = 0;
+	SpawnRateSeconds = Interval;
+	bWaitForSpawnedEnemyDeaths = RequireDeathForCompletion;
 }
 
 bool AFWEnemySpawner::IsDoneSpawning()

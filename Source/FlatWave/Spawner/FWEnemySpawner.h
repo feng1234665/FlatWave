@@ -11,13 +11,20 @@ UCLASS()
 class FLATWAVE_API AFWEnemySpawner : public AFWSpawner
 {
 	GENERATED_BODY()
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UParticleSystemComponent* SpawnParticles;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UAudioComponent* SpawnSound;
 public:
+	AFWEnemySpawner();
+
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
 	void SetActive(bool bIsActive);
 
-	void SetupSpawner(int32 Amount);
+	void SetupSpawner(int32 Amount, float Interval, bool RequireDeathForCompletion);
 	bool IsDoneSpawning();
 	bool AllEnemiesKilled();
 
