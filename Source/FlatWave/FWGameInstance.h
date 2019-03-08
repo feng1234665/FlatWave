@@ -22,9 +22,11 @@ public:
 		void DecreaseSensitivity(float Interval = -.2f);
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetMouseSensitivityScale();
-private:
-	float MouseSensitivityScale = 1.f;
 
+	UFUNCTION(BlueprintCallable)
+		void SaveSettings();
+	void LoadSettings();
+private:
 	UPROPERTY(EditDefaultsOnly)
 		class USoundClass* MasterClass;
 	UPROPERTY(EditDefaultsOnly)
@@ -32,5 +34,10 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 		class USoundClass* MusicClass;
 
+	UPROPERTY()
+		class UFWSettingsSaveGame* SettingsSaveGame;
+	FString SettingsSaveGameName = FString(TEXT("SettingsSlot"));
+
 	void Init() override;
+	void Shutdown() override;
 };

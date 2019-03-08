@@ -45,6 +45,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		FVector SpawnOffset = FVector(0.f, 0.f, 100.f);
+	UPROPERTY(EditDefaultsOnly)
+		float SpawnRadius = 200.f;
 	FVector GetSpawnLocation() override;
 
 	UFUNCTION()

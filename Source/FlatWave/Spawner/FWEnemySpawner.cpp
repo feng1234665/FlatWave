@@ -4,6 +4,7 @@
 #include "FWEnemyCharacterBase.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/AudioComponent.h"
+#include "NavigationSystem/Public/NavigationSystem.h"
 
 AFWEnemySpawner::AFWEnemySpawner()
 {
@@ -55,6 +56,7 @@ void AFWEnemySpawner::SetupSpawner(int32 Amount, float Interval, bool RequireDea
 	AmountToSpawn = Amount;
 	SpawnedEnemyDeathAmount = 0;
 	SpawnRateSeconds = Interval;
+	SpawnRateCounter = 0.f;
 	bWaitForSpawnedEnemyDeaths = RequireDeathForCompletion;
 }
 
@@ -77,7 +79,12 @@ bool AFWEnemySpawner::IsSpawningClass(UClass* Class)
 
 FVector AFWEnemySpawner::GetSpawnLocation()
 {
-	return Super::GetSpawnLocation() + SpawnOffset;
+	FVector SpawnLocation = Super::GetSpawnLocation() + SpawnOffset;
+	FNavLocation ActualLocation;
+	UNavigationSystemV1::GetNavigationSystem(this)->GetRandomPointInNavigableRadius(SpawnLocation, SpawnRadius, ActualLocation);
+	if (ActualLocation.HasNodeRef())
+		return ActualLocation.Location + SpawnOffset;
+	return SpawnLocation;
 }
 
 void AFWEnemySpawner::IncrementKilledEnemies(AActor* DestroyedActor)

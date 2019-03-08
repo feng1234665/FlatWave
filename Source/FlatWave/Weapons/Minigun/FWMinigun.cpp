@@ -43,7 +43,7 @@ void AFWMinigun::FireProjectile()
 	Super::FireProjectile();
 	ActivateParticles();
 	TArray<FHitResult> Hits;
-	FVector Start = GetActorLocation();
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * WeaponData->ProjectileData->MaxRange;
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(COLLISION_PROJECTILE);

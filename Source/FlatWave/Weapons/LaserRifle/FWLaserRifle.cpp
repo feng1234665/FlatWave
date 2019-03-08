@@ -62,9 +62,9 @@ void AFWLaserRifle::FireBeam()
 	UFWLaserRifleData* Data = GetWeaponDataAs<UFWLaserRifleData>();
 	ActivateBeamParticles();
 	TArray<FHitResult> Hits;
-	FVector Start = ProjectileSpawn->GetComponentLocation();
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	float Range = FMath::Lerp(WeaponData->ProjectileData->MaxRange, Data->MaxChargeRange, GetChargePercent());
-	FVector End = Start + GetOwnerCharacter()->GetProjectileSpawnRotation().Vector() * Range;
+	FVector End = Start + GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetForwardVector() * Range;
 	bool HasHit = GetWorld()->LineTraceMultiByChannel(Hits, Start, End, COLLISION_PROJECTILE);
 	if (HasHit)
 	{

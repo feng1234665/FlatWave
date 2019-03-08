@@ -42,6 +42,10 @@ public:
 	void SetGameLost();
 
 	FOnAction OnGameStart;
+	UPROPERTY(BlueprintAssignable)
+		FOnAction OnGameWon;
+	UPROPERTY(BlueprintAssignable)
+		FOnAction OnGameLost;
 	UFUNCTION(BlueprintCallable)
 		class AFWScenarioManager* GetScenarioManager() const;
 private:

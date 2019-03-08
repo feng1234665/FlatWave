@@ -11,8 +11,9 @@
 #include "FWPlayerController.h"
 #include "FlatWave.h"
 #include "Kismet/GameplayStatics.h"
-#include "Net/UnrealNetwork.h"
 #include "FWPlayerWeapon.h"
+#include "FWUtilities.h"
+#include "FWMainGameMode.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFWPlayerCharacter, Warning, All);
 
@@ -129,7 +130,6 @@ float AFWPlayerCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent
 {
 	if (!Cast<AFWPlayerController>(EventInstigator))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Damage Taken: %f, %s"), DamageAmount, *DamageCauser->GetName());
 		OnDamageTaken.Broadcast();
 		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
@@ -146,6 +146,7 @@ void AFWPlayerCharacterBase::OnDeath()
 		PreDeathRotation = GetActorRotation();
 		GetFirstPersonCameraComponent()->bUsePawnControlRotation = false;
 	}
+	UFWUtilities::GetFWMainGameMode(this)->SetGameLost();
 }
 
 class AFWPlayerWeapon* AFWPlayerCharacterBase::GetCurrentWeapon() const

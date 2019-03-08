@@ -100,14 +100,16 @@ bool AFWMainGameMode::IsGameLost()
 
 void AFWMainGameMode::SetGameWon()
 {
-	CurrentState = EGameState::GameOver_Win;
 	UE_LOG(LogTemp, Warning, TEXT("Game Won!"));
+	CurrentState = EGameState::GameOver_Win;
+	OnGameWon.Broadcast();
 }
 
 void AFWMainGameMode::SetGameLost()
 {
-	CurrentState = EGameState::GameOver_Lose;
 	UE_LOG(LogTemp, Warning, TEXT("Game Lost!"));
+	CurrentState = EGameState::GameOver_Lose;
+	OnGameLost.Broadcast();
 }
 
 class AFWScenarioManager* AFWMainGameMode::GetScenarioManager() const
