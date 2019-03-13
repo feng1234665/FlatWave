@@ -4,6 +4,15 @@ FlatWave is a small First-Person Shooter where the player has to kill all enemie
 
 Includes one level (with a small tutorial in the beginning), three different weapons (Laser Rifle, Minigun and Rocket Launcher) and three enemy types.
 
+## Download
+
+You can find a download link of a binary package for Windows under the release tab (https://github.com/janniklaskeck/FlatWave/releases)
+
+### Installation
+
+Extract the contents of the .zip file to a location of your liking.
+Inside you'll find a "FlatWave.exe", which will start the game.
+
 ## Controls
 
 Movement: WASD
